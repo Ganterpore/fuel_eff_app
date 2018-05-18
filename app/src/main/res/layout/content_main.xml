@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.mitchell.test1.MainActivity"
+    tools:showIn="@layout/activity_main">
+
+    <Button
+        android:id="@+id/button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"
+        android:onClick="sendMessage"
+        android:text="@string/button_send"
+        app:layout_constraintBaseline_toBaselineOf="@+id/editText"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/editText" />
+
+    <EditText
+        android:id="@+id/editText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="80dp"
+        android:ems="10"
+        android:hint="@string/edit_message"
+        android:inputType="textPersonName"
+        app:layout_constraintEnd_toStartOf="@+id/button"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginLeft="16dp" />
+
+    <TextView
+        android:id="@+id/AverageEfficiencyEquals"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:layout_marginTop="160dp"
+        android:layout_marginLeft="16dp"
+        android:text="@string/average_efficiency"
+        app:layout_constraintEnd_toStartOf="@+id/AverageEfficiency"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="16dp" />
+    <TextView
+        android:id="@+id/AverageEfficiency"
+        android:layout_marginTop="160dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="@string/DefaultFloat"
+        app:layout_constraintBaseline_toBaselineOf="@id/AverageEfficiencyEquals"
+        app:layout_constraintLeft_toLeftOf="@id/AverageEfficiencyEquals"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+    <TextView
+        android:id="@+id/TotalDistanceEquals"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginLeft="16dp"
+        android:text="@string/total_distance"
+        app:layout_constraintEnd_toStartOf="@+id/TotalDistance"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@id/AverageEfficiencyEquals" />
+    <TextView
+        android:id="@+id/TotalDistance"
+        android:layout_marginTop="32dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+
+        android:text="@string/DefaultFloat"
+        app:layout_constraintBaseline_toBaselineOf="@id/TotalDistanceEquals"
+        app:layout_constraintLeft_toLeftOf="@id/TotalDistanceEquals"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/AverageEfficiency" />
+
+    <TextView
+        android:id="@+id/TotalCostEquals"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="32dp"
+        android:text="@string/total_cost"
+        app:layout_constraintEnd_toStartOf="@+id/TotalCost"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@id/TotalDistanceEquals" />
+    <TextView
+        android:id="@+id/TotalCost"
+        android:layout_marginTop="32dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:text="@string/DefaultFloat"
+        app:layout_constraintBaseline_toBaselineOf="@id/TotalCostEquals"
+        app:layout_constraintLeft_toLeftOf="@id/TotalCostEquals"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/TotalDistanceEquals" />
+    <TextView
+        android:id="@+id/TotalLitresEquals"
+        android:layout_width="wrap_content"
+        android:layout_height="16dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginLeft="16dp"
+        android:text="@string/total_litres"
+        app:layout_constraintEnd_toStartOf="@+id/TotalLitres"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toTopOf="@id/TotalCostEquals" />
+    <TextView
+        android:id="@+id/TotalLitres"
+        android:layout_marginTop="32dp"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:text="@string/DefaultFloat"
+        app:layout_constraintBaseline_toBaselineOf="@id/TotalLitresEquals"
+        app:layout_constraintLeft_toLeftOf="@id/TotalLitresEquals"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="@id/TotalCostEquals" />
+
+    <Button
+        android:id="@+id/HistoryButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="128dp"
+        android:layout_marginLeft="32dp"
+        android:layout_marginRight="32dp"
+        android:onClick="openHistory"
+        android:text="@string/history"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent" />
+</android.support.constraint.ConstraintLayout>

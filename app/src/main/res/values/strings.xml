@@ -1,0 +1,28 @@
+<resources>
+    <string name="app_name">Fuel Efficiency                                               </string>
+    <string name="action_settings">Settings</string>
+    <string name="name">Name</string>
+    <string name="edit_message">Enter a message</string>
+    <string name="button_send">Send</string>
+    <string name="title_activity_add_entry">Add Entry</string>
+
+    <string name="add_date">Enter Date (dd/mm/yyyy)</string>
+    <string name="add_trip">Enter Trip Distance</string>
+    <string name="add_litres">Enter Litres Filled</string>
+    <string name="add_price">Enter Fuel Price (cents)</string>
+    <string name="add_cost">Enter Cost</string>
+    <string name="title_activity_entry">EntryActivity</string>
+    <string name="textview">TextView</string>
+    <string name="title_activity_entry_history">EntryHistoryActivity</string>
+    <string name="delete">Delete</string>
+    <string name="edit">Edit</string>
+    <string name="create">SAVE</string>
+    <string name="DefaultFloat">0.0</string>
+    <string name="average_efficiency">Average efficiency =</string>
+    <string name="total_distance">Total Distance =</string>
+    <string name="history">History</string>
+    <string name="total_cost">Total cost:</string>
+    <string name="total_litres">Total Litres:</string>
+
+
+</resources>
