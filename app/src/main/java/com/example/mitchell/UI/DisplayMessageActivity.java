@@ -1,4 +1,4 @@
-package com.example.mitchell.test1;
+package com.example.mitchell.UI;
 
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;

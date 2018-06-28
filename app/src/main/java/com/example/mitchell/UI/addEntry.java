@@ -1,4 +1,4 @@
-package com.example.mitchell.test1;
+package com.example.mitchell.UI;
 
 import android.app.DatePickerDialog;
 import android.arch.persistence.room.Room;
@@ -10,7 +10,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,16 +20,23 @@ import android.widget.Toast;
 
 import java.util.Calendar;
 
+import application.Entry;
+import database.AppDatabase;
+
+/**
+ * activity is used for the creation of an entry
+ */
 public class addEntry extends AppCompatActivity {
     //where the entry is stored in the intent passed from this activity
     public static final String ENTRY = "com.example.mitchell.test1.ENTRY";
     private TextView displayDate;
     private DatePickerDialog.OnDateSetListener dateSetListener;
-    private boolean isEdit = false;
+    private boolean isEdit = false; //determines whether an edit or add is being performed
     private Entry editEntry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        //default creation items
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_entry);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
@@ -40,6 +46,7 @@ public class addEntry extends AppCompatActivity {
         android.support.v7.app.ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
+        //checks if we are editing an item, if so, set the text fields to what they currently are
         editEntry = getIntent().getParcelableExtra(EntryActivity.PREVIOUS_ENTRY);
         if(editEntry != null) {
             isEdit = true;
@@ -55,13 +62,13 @@ public class addEntry extends AppCompatActivity {
         displayDate.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                //getting current year
+                //getting current date
                 Calendar cal = Calendar.getInstance();
                 int year = cal.get(Calendar.YEAR);
                 int month = cal.get(Calendar.MONTH);
                 int day = cal.get(Calendar.DAY_OF_MONTH);
 
-                //opens dialog
+                //opens dialog for calendar
                 DatePickerDialog dialog = new DatePickerDialog(
                         addEntry.this,
                         android.R.style.Theme_DeviceDefault_Light_DarkActionBar,
@@ -123,6 +130,7 @@ public class addEntry extends AppCompatActivity {
         price = null;
         //checks to make sure the data is valid
         //TODO check for empty date field
+        //TODO extract method
         try {
             date = ((EditText) findViewById(R.id.Date)).getText().toString();
             trip = Double.parseDouble(((EditText) findViewById(R.id.Trip)).getText().toString());
@@ -165,11 +173,15 @@ public class addEntry extends AppCompatActivity {
         final AppDatabase db = Room.databaseBuilder(getApplicationContext(),
                 AppDatabase.class, "database-name").build();
 
+        //TODO remove this whole section. the UI should definitely not be directly interacting
+            //with the database
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... entries) {
                 db.entryDao().insert(entry);
                 //if this entry is coming from an edit, then the old entry should be deleted.
+                //TODO remove this. This is clear interaction between UI and application
+                    //perhaps instead give the primary key with it?
                 if (isEdit) {
                     db.entryDao().deleteId(editEntry.getEid());
                 }

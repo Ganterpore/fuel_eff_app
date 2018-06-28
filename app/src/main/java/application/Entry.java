@@ -1,23 +1,15 @@
-package com.example.mitchell.test1;
+package application;
 
-import android.app.Activity;
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
-import android.arch.persistence.room.Room;
-import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
-import android.content.Context;
-import java.util.ArrayList;
-
-import static android.support.v4.content.ContextCompat.startActivity;
-import static com.example.mitchell.test1.addEntry.ENTRY;
 
 /**
  * Created by Mitchell on 8/02/2018.
+ * class describes the refill entries when a ar is filled up
  */
 
 @Entity
@@ -44,24 +36,14 @@ public class Entry implements Parcelable  {
     @ColumnInfo
     private double price;
 
-//    private static ArrayList<Entry> entries = new ArrayList<>();
-
     public Entry(String date, double trip, double litres, double price) {
         this.date = date;
         this.trip = trip;
         this.litres = litres;
         this.price = price;
-
-
-
-//        entries.add(this);
-    }
+    } //TODO add instance for entry that includes an eid elaready (for editing)
 
     //TODO remove privacy leak
-//    public static ArrayList<Entry> getEntries() {
-//        return entries;
-//    }
-
     public String getDate() {
         return date;
     }

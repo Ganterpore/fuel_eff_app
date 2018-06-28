@@ -1,8 +1,9 @@
-package com.example.mitchell.test1;
+package database;
 
 import android.arch.persistence.room.Database;
-import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.RoomDatabase;
+
+import application.Entry;
 
 /**
  * Created by Mitchell on 18/02/2018.

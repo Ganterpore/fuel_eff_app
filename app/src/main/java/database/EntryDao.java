@@ -1,22 +1,27 @@
-package com.example.mitchell.test1;
+package database;
 
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
-import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 import android.database.Cursor;
 
 import java.util.List;
 
+import application.Entry;
+
 /**
  * Created by Mitchell on 18/02/2018.
  */
 
+
+/**
+ * allows access and modification of entries from the entry database
+ */
 @Dao
 public interface EntryDao {
     @Query("SELECT * FROM entry")
-    public List<Entry> getAll();
+    List<Entry> getAll();
 
     @Query("SELECT * FROM entry")
     Cursor getAllCursor();
@@ -25,16 +30,16 @@ public interface EntryDao {
     int getCount();
 
     @Insert
-    public void insertAll(Entry... entries);
+    void insertAll(Entry... entries);
 
     @Insert
     void insert(Entry entry);
 
     @Delete
-    public void delete(Entry entry);
+    void delete(Entry entry);
 
     @Delete
-    public void deleteAll(Entry... entries);
+    void deleteAll(Entry... entries);
 
     @Query("DELETE FROM entry WHERE eid = :entryid")
     void deleteId(int entryid);

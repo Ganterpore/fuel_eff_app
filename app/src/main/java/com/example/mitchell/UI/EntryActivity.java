@@ -1,4 +1,4 @@
-package com.example.mitchell.test1;
+package com.example.mitchell.UI;
 
 import android.arch.persistence.room.Room;
 import android.content.Intent;
@@ -11,10 +11,16 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-public class EntryActivity extends AppCompatActivity {
+import application.Entry;
+import database.AppDatabase;
 
+/**
+ * used to display entries to the user
+ */
+public class EntryActivity extends AppCompatActivity {
     public static final String PREVIOUS_ENTRY = "com.example.mitchell.test1.PREVIOUS_ENTRY";
 
+    //entry being displayed
     private Entry entry;
 
     @Override
@@ -60,7 +66,6 @@ public class EntryActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            //if create entry is selected, create the entry
             case R.id.delete_entry:
                 deleteEntry();
                 finish();
@@ -74,6 +79,10 @@ public class EntryActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * used to edit an entry.
+     * sends current entry to the create entry editor
+     */
     private void editEntry() {
         Intent intent = new Intent(this, addEntry.class);
         intent.putExtra(PREVIOUS_ENTRY, entry);
@@ -81,6 +90,10 @@ public class EntryActivity extends AppCompatActivity {
         finish();
     }
 
+    /**
+     * removes entry from database
+     * TODO remove database usage from UI
+     */
     public void deleteEntry() {
         final AppDatabase db = Room.databaseBuilder(getApplicationContext(),
                 AppDatabase.class, "database-name").build();
