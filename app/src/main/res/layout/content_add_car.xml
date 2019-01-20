@@ -4,16 +4,18 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.mitchell.UI.DisplayMessageActivity">
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.mitchell.UI.addCarActivity"
+    tools:showIn="@layout/activity_add_car">
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/Name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="TextView"
-        android:textStyle="bold"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="@string/enter_name"
+        tools:layout_editor_absoluteX="139dp"
+        tools:layout_editor_absoluteY="253dp"
+        android:layout_marginTop="32dp"
+        android:layout_marginLeft="16dp"
+        />
 </android.support.constraint.ConstraintLayout>

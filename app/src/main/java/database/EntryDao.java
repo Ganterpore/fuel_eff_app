@@ -8,7 +8,12 @@ import android.database.Cursor;
 
 import java.util.List;
 
-import application.Entry;
+import Models.Car;
+import Models.Entry;
+import Models.EntryTag;
+import Models.Note;
+import Models.PetrolType;
+import Models.TagsOnEntry;
 
 /**
  * Created by Mitchell on 18/02/2018.
@@ -20,11 +25,14 @@ import application.Entry;
  */
 @Dao
 public interface EntryDao {
-    @Query("SELECT * FROM entry")
-    List<Entry> getAll();
+    @Query("SELECT * FROM entry WHERE car = :cid")
+    List<Entry> getAllEntries(int cid);
 
     @Query("SELECT * FROM entry")
     Cursor getAllCursor();
+
+    @Query("SELECT * FROM entry WHERE eid = :eid")
+    Entry getEntry(int eid);
 
     @Query("SELECT COUNT(*) FROM entry")
     int getCount();
@@ -56,5 +64,52 @@ public interface EntryDao {
     @Query("SELECT SUM(litres) FROM entry")
     double getTotalLitres();
 
+    @Query("SELECT * FROM entry WHERE car = :cid & eid IN " +
+            "(SELECT eid FROM tagsonentry WHERE  tid = :tid)")
+    List<Entry> getEntriesWithTag(int cid, int tid);
 
+    @Query("SELECT * FROM entrytag WHERE tid IN " +
+            "(SELECT tid FROM tagsonentry " +
+            "WHERE eid = :eid & nextTrip = :nextTrip)")
+    List<EntryTag> getTagsOnEntry(int eid, boolean nextTrip);
+
+    @Insert()
+    void addTagToEntry(TagsOnEntry tag);
+
+    @Insert()
+    void addNote(Note note);
+
+    @Query("SELECT * FROM note WHERE eid = :eid")
+    Note getNote(int eid);
+
+    @Query("SELECT * FROM entrytag WHERE tid = :tid")
+    EntryTag getTag(int tid);
+
+    @Query("SELECT * FROM petroltype WHERE pid = :pid")
+    PetrolType getFuel(int pid);
+
+    @Query("SELECT * FROM car WHERE cid = :cid")
+    Car getCar(int cid);
+
+    @Query("SELECT * FROM entrytag")
+    List<EntryTag> getAllTags();
+
+    @Query("SELECT * FROM entry WHERE fuel IN" +
+            "(SELECT pid FROM petroltype WHERE percent = :percent)")
+    List<Entry> getEntryWithPercent(int percent);
+
+    @Query("SELECT * FROM car")
+    List<Car> getAllCars();
+
+    @Insert
+    void addTag(EntryTag tag);
+
+    @Insert
+    void addFuel(PetrolType fuel);
+
+    @Insert
+    void addCar(Car car);
+
+    @Query("SELECT eid FROM entry WHERE car = :cid ORDER BY date")
+    List<Integer> getOrderedEid(int cid);
 }
