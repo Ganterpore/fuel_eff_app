@@ -26,7 +26,7 @@ import static android.arch.persistence.room.ForeignKey.SET_NULL;
         onDelete = SET_NULL
         )}
 )
-public class Entry {//implements Parcelable  {
+public class Entry {
     public int getEid() {
         return eid;
     }
@@ -118,58 +118,12 @@ public class Entry {//implements Parcelable  {
     public void setFuel(int fuel) {
         this.fuel = fuel;
     }
-    //    public List<EntryTag> getTags() {
+//        public List<EntryTag> getTags() {
 //        //if tags not in memory, get from database
 //
 //        if(tags==null) {
 //            tags = Controller.db.entryDao().getTagsOnEntry(this.eid);
 //        }
 //    }
-
-    /******************Parcel funcitons************************/
-
-
-//    //creating Entry from Parcel
-//    public Entry(Parcel input) {
-//        String[] data = new String[6];
-//
-//        input.readStringArray(data);
-//        this.eid    = Integer.parseInt(data[0]);
-//        this.date   = data[1];
-//        this.trip   = Double.parseDouble(data[2]);
-//        this.litres = Double.parseDouble(data[3]);
-//        this.price  = Double.parseDouble(data[4]);
-//        this.car    = Integer.parseInt(data[5]);
-//    }
-//
-//    public static final Creator<Entry> CREATOR = new Creator<Entry>() {
-//        @Override
-//        public Entry createFromParcel(Parcel in) {
-//            return new Entry(in);
-//        }
-//
-//        @Override
-//        public Entry[] newArray(int size) {
-//            return new Entry[size];
-//        }
-//    };
-//
-//    @Override
-//    public int describeContents() {
-//        return 0;
-//    }
-//
-//    @Override
-//    public void writeToParcel(Parcel parcel, int i) {
-//        parcel.writeStringArray(new String[]{
-//                String.valueOf(this.eid),
-//                this.date,
-//                String.valueOf(this.trip),
-//                String.valueOf(this.litres),
-//                String.valueOf(this.price),
-//                String.valueOf(this.car)
-//        });
-//    }
-
 
 }

@@ -21,6 +21,7 @@ public class Note {
 
     public Note(String note, int eid) {
         this.note = note;
+        this.eid = eid;
     }
 
     public String getNote() {

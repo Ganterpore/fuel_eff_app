@@ -9,7 +9,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import application.Controller;
+import Controller.Controller;
 
 /**
  * initial class created on startup
