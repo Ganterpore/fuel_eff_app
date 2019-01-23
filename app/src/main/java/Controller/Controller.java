@@ -1,6 +1,8 @@
 package Controller;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,17 +45,26 @@ public class Controller {
         db.entryDao().addFuel(fuel);
     }
 
-    public void addCar(String licensPlate) {
-        Car car = new Car(licensPlate);
-        db.entryDao().addCar(car);
-    }
-
     public EntryTag getTag(int tid) {
         return db.entryDao().getTag(tid);
     }
 
     public Car getCar(int cid) {
         return db.entryDao().getCar(cid);
+    }
+
+    public String newCar(@NonNull String carName, String licensePlate, String make, String model) {
+        Car car = new Car();
+
+        car.setLicensePlate(licensePlate);
+        car.setMake(make);
+        car.setModel(model);
+        car.setName(carName);
+
+        String cid = Long.toString(db.entryDao().addCar(car));
+        Log.d("A", "newCar: "+cid);
+        return cid;
+
     }
 
     public PetrolType getFuel(int pid) {

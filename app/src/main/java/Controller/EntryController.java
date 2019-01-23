@@ -27,7 +27,7 @@ public class EntryController {
         return entry;
     }
 
-    public List<EntryWrapper> getAllEntries(int cid) {
+    public List<EntryWrapper> getAllEntriesWithTag(int cid) {
         List<Entry> entries = db.entryDao().getAllEntries(cid);
         List<EntryWrapper> wrappedEntries = new ArrayList<>();
         for(Entry entry : entries) {
@@ -35,7 +35,7 @@ public class EntryController {
         }
         return wrappedEntries;
     }
-    public List<EntryWrapper> getAllEntries(int cid, int tid) {
+    public List<EntryWrapper> getAllEntriesWithTag(int cid, int tid) {
         List<Entry> entries = db.entryDao().getEntriesWithTag(cid, tid);
         List<EntryWrapper> wrappedEntries = new ArrayList<>();
         for(Entry entry : entries) {
@@ -48,19 +48,19 @@ public class EntryController {
         return db.entryDao().getEntryWithPercent(percent);
     }
 
-    public double getAverageEfficiency() {
-        return db.entryDao().getAverageEfficiency();
+    public double getAverageEfficiency(int cid) {
+        return db.entryDao().getAverageEfficiency(cid);
     }
 
-    public double getTotalDistance() {
-        return db.entryDao().getTotalDistance();
+    public double getTotalDistance(int cid) {
+        return db.entryDao().getTotalDistance(cid);
     }
 
-    public double getTotalCost() {
-        return db.entryDao().getTotalCost();
+    public double getTotalCost(int cid) {
+        return db.entryDao().getTotalCost(cid);
     }
 
-    public double getTotalLitres() {
-        return db.entryDao().getTotalLitres();
+    public double getTotalLitres(int cid) {
+        return db.entryDao().getTotalLitres(cid);
     }
 }

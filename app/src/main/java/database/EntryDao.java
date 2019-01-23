@@ -52,17 +52,17 @@ public interface EntryDao {
     @Query("DELETE FROM entry WHERE eid = :entryid")
     void deleteId(int entryid);
 
-    @Query("SELECT 100*(SUM(litres)/SUM(trip)) FROM entry")
-    double getAverageEfficiency();
+    @Query("SELECT 100*(SUM(litres)/SUM(trip)) FROM entry WHERE car = :cid")
+    double getAverageEfficiency(int cid);
 
-    @Query("SELECT SUM(trip) FROM entry")
-    double getTotalDistance();
+    @Query("SELECT SUM(trip) FROM entry WHERE car = :cid")
+    double getTotalDistance(int cid);
 
-    @Query("SELECT SUM(litres*price)/100 FROM entry")
-    double getTotalCost();
+    @Query("SELECT SUM(litres*price)/100 FROM entry WHERE car = :cid")
+    double getTotalCost(int cid);
 
-    @Query("SELECT SUM(litres) FROM entry")
-    double getTotalLitres();
+    @Query("SELECT SUM(litres) FROM entry WHERE car = :cid")
+    double getTotalLitres(int cid);
 
     @Query("SELECT * FROM entry WHERE car = :cid & eid IN " +
             "(SELECT eid FROM tagsonentry WHERE  tid = :tid)")
@@ -108,7 +108,7 @@ public interface EntryDao {
     void addFuel(PetrolType fuel);
 
     @Insert
-    void addCar(Car car);
+    long addCar(Car car);
 
     @Query("SELECT eid FROM entry WHERE car = :cid ORDER BY date")
     List<Integer> getOrderedEid(int cid);

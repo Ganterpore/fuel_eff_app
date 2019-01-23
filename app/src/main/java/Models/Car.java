@@ -25,6 +25,9 @@ public class Car {
         this.licensePlate = licensePlate;
     }
 
+    public Car() {
+    }
+
     public String getModel() {
         return model;
     }
