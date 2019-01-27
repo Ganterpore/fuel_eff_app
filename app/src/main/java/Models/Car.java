@@ -28,6 +28,19 @@ public class Car {
     public Car() {
     }
 
+    public Car(int cid, String licensePlate, String model, String make, String name) {
+        this.cid = cid;
+        this.licensePlate = licensePlate;
+        this.model = model;
+        this.make = make;
+        this.name = name;
+    }
+
+    @Override
+    public String toString() {
+        return cid+"/"+name+"/"+licensePlate+"/"+model+"/"+make;
+    }
+
     public String getModel() {
         return model;
     }

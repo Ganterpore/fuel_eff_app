@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <!--TODO make errors show up red
+        TODO automatically select next box when enter hit-->
+
+    <TextView
+        android:id="@+id/title_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Entry details" />
+
+    <EditText
+        android:id="@+id/entry_date"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter Date dd/mm/yyyy"
+        android:inputType="date" />
+
+    <EditText
+        android:id="@+id/trip_length"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter trip length..."
+        android:inputType="number"/>
+
+    <EditText
+        android:id="@+id/fill_up_litres"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Add litres filled..."
+        android:inputType="numberDecimal"/>
+
+    <EditText
+        android:id="@+id/entry_price"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter cost..."
+        android:inputType="numberDecimal"/>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Spinner
+            android:id="@+id/car_used"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown"
+            app:layout_constraintEnd_toStartOf="@+id/add_car_button"
+            app:layout_constraintRight_toLeftOf="@+id/add_car_button"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/add_car_button"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/ic_menu_add"
+            app:layout_constraintRight_toRightOf="parent"
+            android:gravity="center"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <android.support.constraint.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <Spinner
+            android:id="@+id/fuel_used"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/btn_dropdown"
+            android:spinnerMode="dropdown"
+            app:layout_constraintEnd_toStartOf="@+id/add_fuel_button"
+            app:layout_constraintRight_toLeftOf="@+id/add_fuel_button"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/add_fuel_button"
+            style="@style/Widget.AppCompat.Button.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/ic_menu_add"
+            app:layout_constraintRight_toRightOf="parent"
+            android:gravity="center"/>
+
+    </android.support.constraint.ConstraintLayout>
+
+    <!--<EditText-->
+        <!--android:id="@+id/fuel_used"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:hint="Enter fuel type used..."/>-->
+    <!--TODO update to dropdown menu, with add button-->
+
+
+</LinearLayout>

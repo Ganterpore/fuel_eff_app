@@ -65,6 +65,11 @@ public class Entry {
         this.fuel = fuel;
     }
 
+    @Override
+    public String toString() {
+        return car+"/"+trip;
+    }
+
     public long getDate() {
         return date;
     }

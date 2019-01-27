@@ -3,29 +3,46 @@ package com.example.mitchell.UI;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 
 import Controller.Controller;
 import Models.Car;
+import Models.PetrolType;
 
 import static java.lang.System.exit;
 
@@ -35,6 +52,8 @@ import static java.lang.System.exit;
 public class MainActivity extends AppCompatActivity {
     Controller controller = null;
     int carID;
+    private List<Car> cars;
+    private List<PetrolType> fuels;
     private TextView efficiency;
     private TextView distance;
     private TextView cost;
@@ -80,13 +99,14 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected Boolean doInBackground(Void... voids) {
 
-
-                List<Car> cars = Controller.getCurrentController().getAllCars();
-                if(cars.size()==0) { //if there are currently no cars, we must create one
+                activity.fuels = Controller.getCurrentController().getAllFuels();
+                activity.cars = Controller.getCurrentController().getAllCars();
+                if(activity.cars.size()==0) { //if there are currently no cars, we must create one
 //                    activity.createCarDialogue();
                     return false;
                 } else {
-                    String defaultCid = String.valueOf(cars.get(0).getCid());
+                    String defaultCid = String.valueOf(activity.cars.get(0).getCid());
+                    Log.d("A", "doInBackground: "+ Arrays.toString(activity.cars.toArray()));
 
                     Properties properties = new Properties();
                     try {
@@ -139,7 +159,13 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId(); //id of the option selected
-
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_add_car:
+                createCarDialogue();
+                break;
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             //if settings is clicked... do nothing
@@ -153,25 +179,155 @@ public class MainActivity extends AppCompatActivity {
         //action when entry button is pressed
 //        Intent intent = new Intent(this, addEntry.class);
 //        startActivity(intent);
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View addEntryLayout = layoutInflater.inflate(R.layout.new_entry_dialogue_box, null);
+
+        final EditText dateET = addEntryLayout.findViewById(R.id.entry_date);
+        final EditText tripLengthET = addEntryLayout.findViewById(R.id.trip_length);
+        final EditText litresFilledET = addEntryLayout.findViewById(R.id.fill_up_litres);
+        final EditText priceET = addEntryLayout.findViewById(R.id.entry_price);
+        final Spinner carChoices = addEntryLayout.findViewById(R.id.car_used);
+        final Button addCarButton = addEntryLayout.findViewById(R.id.add_car_button);
+        final Spinner fuelChoices = addEntryLayout.findViewById(R.id.fuel_used);
+        final Button addFuelButton = addEntryLayout.findViewById(R.id.add_fuel_button);
+
+
+
+        ArrayAdapter<Car> carsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item);
+        carsAdapter.addAll(cars);
+        carChoices.setAdapter(carsAdapter);
+
+        addCarButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createCarDialogue();
+            }
+        });
+
+        ArrayAdapter<PetrolType> fuelsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item);
+        fuelsAdapter.addAll(fuels);
+
+        fuelChoices.setAdapter(fuelsAdapter);
+
+        addFuelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                createFuelTypeDialogue();
+            }
+        });
+
+
+        dateET.setOnClickListener(new View.OnClickListener() {
+            @RequiresApi(api = Build.VERSION_CODES.N)
+            @Override
+            public void onClick(View view) {
+                //hide keyboard
+                InputMethodManager imm = (InputMethodManager) MainActivity.this.getSystemService(MainActivity.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                //open date picker
+                DatePickerDialog datePicker = new DatePickerDialog(MainActivity.this);
+                datePicker.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
+                    @Override
+                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
+                        dateET.setText(day+"/"+(month+1)+"/"+year);
+                    }
+                });
+                datePicker.show();
+            }
+        });
+        final MainActivity activity = this;
+        //building the alert dialogue
+        AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(this);
+        addEntryAlert.setTitle("New Entry");
+        addEntryAlert.setView(addEntryLayout);
+        addEntryAlert.setNegativeButton("Cancel", null);
+        addEntryAlert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                final long startDate;
+                try {
+                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+                    Date date = sdf.parse(dateET.getText().toString());
+                    startDate = date.getTime();
+
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                    Toast.makeText(activity, "incorrect Date format given", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+                new AsyncTask<Void, Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        controller.entryC.newEntry(
+                                startDate,
+                                Double.parseDouble(tripLengthET.getText().toString()),
+                                Double.parseDouble(litresFilledET.getText().toString()),
+                                Double.parseDouble(priceET.getText().toString()),
+                                ((Car) carChoices.getSelectedItem()).getCid(),
+                                ((PetrolType) fuelChoices.getSelectedItem()).getPid()
+                        );
+                        return null;
+                    }
+                }.execute();
+
+            }
+        });
+        //displaying the dialogue to the UI
+        addEntryAlert.create().show();
+    }
+
+    public void createFuelTypeDialogue() {
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View addFuelLayout  =   layoutInflater.inflate(R.layout.new_fuel_dialogue_box, null);
+
+        final EditText fuelName = addFuelLayout.findViewById(R.id.fuel_name);
+        final EditText fuelPercent = addFuelLayout.findViewById(R.id.fuel_percent);
+
+        AlertDialog.Builder addFuelAlert = new AlertDialog.Builder(this);
+        addFuelAlert.setTitle("New fuel type");
+        addFuelAlert.setView(addFuelLayout);
+        addFuelAlert.setNegativeButton("Cancel", null);
+        addFuelAlert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                new AsyncTask<Void, Void, PetrolType>() {
+
+                    @Override
+                    protected PetrolType doInBackground(Void... voids) {
+                        long fuelID = Controller.getCurrentController().addFuel(
+                                fuelName.getText().toString(),
+                                Integer.parseInt(fuelPercent.getText().toString())
+                        );
+                        PetrolType fuel = Controller.getCurrentController().getFuel(fuelID);
+                        return fuel;
+                    }
+
+                    @Override
+                    protected void onPostExecute(PetrolType petrolType) {
+                        fuels.add(petrolType);
+                    }
+                }.execute();
+            }
+        });
+
+        addFuelAlert.create().show();
     }
 
     public void createCarDialogue() {
-        //TODO
-        efficiency.setText("new car idiot");
-
         LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View addContactLayout = layoutInflater.inflate(R.layout.new_car_dialogue_box, null);
-        final EditText carNameET = addContactLayout.findViewById(R.id.car_name);
-        final EditText licensePlateET = addContactLayout.findViewById(R.id.license_plate);
-        final EditText makeET = addContactLayout.findViewById(R.id.make);
-        final EditText modelET = addContactLayout.findViewById(R.id.model);
+        View addCarLayout = layoutInflater.inflate(R.layout.new_car_dialogue_box, null);
+        final EditText carNameET = addCarLayout.findViewById(R.id.car_name);
+        final EditText licensePlateET = addCarLayout.findViewById(R.id.license_plate);
+        final EditText makeET = addCarLayout.findViewById(R.id.make);
+        final EditText modelET = addCarLayout.findViewById(R.id.model);
         final MainActivity activity = this;
         //building the alert dialogue
-        AlertDialog.Builder addContactAlert = new AlertDialog.Builder(this);
-        addContactAlert.setTitle("New car");
-        addContactAlert.setView(addContactLayout);
-        addContactAlert.setNegativeButton("Cancel", null);
-        addContactAlert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+        AlertDialog.Builder addCarAlert = new AlertDialog.Builder(this);
+        addCarAlert.setTitle("New car");
+        addCarAlert.setView(addCarLayout);
+        addCarAlert.setNegativeButton("Cancel", null);
+        addCarAlert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
 //                accountController.requestContact(emailEt.getText().toString());
@@ -183,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
         //displaying the dialogue to the UI
-        addContactAlert.create().show();
+        addCarAlert.create().show();
     }
 
     public static void addCarToDatabaseAndUpdate(final MainActivity activity, final String carName,
@@ -201,15 +357,17 @@ public class MainActivity extends AppCompatActivity {
                 //first set the newly created car ID as the default
                 Properties properties = new Properties();
                 try {
-                    properties.load(new FileInputStream("Assets/settings.properties"));
+                    properties.load(activity.getAssets().open("settings.properties"));
                 } catch (IOException e) {
                     e.printStackTrace();
                     exit(1);
                 }
                 properties.setProperty("car", cid);
+                Car car = new Car(Integer.parseInt(cid), licensePlate, model, make, carName);
+                activity.cars.add(car);
 
                 //refresh the page so the newest details are there
-                activity.updateDetails(activity);
+//                MainActivity.updateDetails(activity);
             }
         }.execute();
 
@@ -217,8 +375,9 @@ public class MainActivity extends AppCompatActivity {
 
     public void openHistory(View view) {
         //action when history button is pressed
-//        Intent intent = new Intent(this, EntryHistoryActivity.class);
-//        startActivity(intent);
+        Intent intent = new Intent(this, EntryHistoryActivity.class);
+        intent.putExtra("carID", carID);
+        startActivity(intent);
     }
 
 

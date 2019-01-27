@@ -20,24 +20,6 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".addEntry"
-            android:label="@string/title_activity_add_entry"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
-            android:name=".EntryActivity"
-            android:label="@string/title_activity_entry"
-            android:parentActivityName=".MainActivity"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
-        <activity
             android:name=".EntryHistoryActivity"
             android:label="@string/title_activity_entry_history"
             android:parentActivityName=".MainActivity"
@@ -46,14 +28,7 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity
-            android:name=".addCarActivity"
-            android:label="@string/title_activity_add_car"
-            android:theme="@style/AppTheme.NoActionBar">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".MainActivity" />
-        </activity>
+
     </application>
 
 </manifest>

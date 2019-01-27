@@ -40,9 +40,13 @@ public class Controller {
         db.entryDao().addTag(tag);
     }
 
-    public void addFuel(String name, int percent) {
+    public long addFuel(String name, int percent) {
         PetrolType fuel = new PetrolType(name, percent);
-        db.entryDao().addFuel(fuel);
+        return db.entryDao().addFuel(fuel);
+    }
+
+    public List<PetrolType> getAllFuels() {
+        return db.entryDao().getAllFuels();
     }
 
     public EntryTag getTag(int tid) {
@@ -67,7 +71,7 @@ public class Controller {
 
     }
 
-    public PetrolType getFuel(int pid) {
+    public PetrolType getFuel(long pid) {
         return db.entryDao().getFuel(pid);
     }
 

@@ -1,5 +1,7 @@
 package Controller;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,7 +25,8 @@ public class EntryController {
 
     public EntryWrapper newEntry(long date, double trip, double litres, double price, int car, int fuel) {
         EntryWrapper entry = new EntryWrapper(date, trip, litres, price, car, fuel, db);
-        this.db.entryDao().insert(entry.entry);
+        this.db.entryDao().addEntry(entry.entry);
+        Log.d("A", "newEntry: Entry added");
         return entry;
     }
 

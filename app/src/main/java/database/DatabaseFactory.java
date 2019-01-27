@@ -12,7 +12,8 @@ public class DatabaseFactory {
                     context,
                     AppDatabase.class,
                     "database-name"
-            ).build();
+            )
+                    .build();
         }
         return db;
     }

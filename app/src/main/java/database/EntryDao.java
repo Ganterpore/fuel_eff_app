@@ -29,6 +29,9 @@ public interface EntryDao {
     List<Entry> getAllEntries(int cid);
 
     @Query("SELECT * FROM entry")
+    List<Entry> getAllEntries();
+
+    @Query("SELECT * FROM entry")
     Cursor getAllCursor();
 
     @Query("SELECT * FROM entry WHERE eid = :eid")
@@ -41,10 +44,10 @@ public interface EntryDao {
     void insertAll(Entry... entries);
 
     @Insert
-    void insert(Entry entry);
+    void addEntry(Entry entry);
 
     @Delete
-    void delete(Entry entry);
+    void deleteEntry(Entry entry);
 
     @Delete
     void deleteAll(Entry... entries);
@@ -86,7 +89,10 @@ public interface EntryDao {
     EntryTag getTag(int tid);
 
     @Query("SELECT * FROM petroltype WHERE pid = :pid")
-    PetrolType getFuel(int pid);
+    PetrolType getFuel(long pid);
+
+    @Query("SELECT * FROM petroltype")
+    List<PetrolType> getAllFuels();
 
     @Query("SELECT * FROM car WHERE cid = :cid")
     Car getCar(int cid);
@@ -105,7 +111,7 @@ public interface EntryDao {
     void addTag(EntryTag tag);
 
     @Insert
-    void addFuel(PetrolType fuel);
+    long addFuel(PetrolType fuel);
 
     @Insert
     long addCar(Car car);

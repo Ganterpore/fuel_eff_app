@@ -18,6 +18,11 @@ public class PetrolType {
         this.percent = percent;
     }
 
+    @Override
+    public String toString() {
+        return pid+"/"+name+"/"+percent;
+    }
+
     public int getPid() {
         return pid;
     }
