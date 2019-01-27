@@ -43,6 +43,7 @@ import java.util.Properties;
 import Controller.Controller;
 import Models.Car;
 import Models.PetrolType;
+import Controller.EntryWrapper;
 
 import static java.lang.System.exit;
 
@@ -176,9 +177,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void newEntry(View view) {
-        //action when entry button is pressed
-//        Intent intent = new Intent(this, addEntry.class);
-//        startActivity(intent);
         LayoutInflater layoutInflater = LayoutInflater.from(this);
         View addEntryLayout = layoutInflater.inflate(R.layout.new_entry_dialogue_box, null);
 
@@ -241,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
         addEntryAlert.setTitle("New Entry");
         addEntryAlert.setView(addEntryLayout);
         addEntryAlert.setNegativeButton("Cancel", null);
-        addEntryAlert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+        addEntryAlert.setPositiveButton("Next", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 final long startDate;
@@ -255,11 +253,11 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(activity, "incorrect Date format given", Toast.LENGTH_SHORT).show();
                     return;
                 }
-                new AsyncTask<Void, Void, Void>() {
+                new AsyncTask<Void, Void, EntryWrapper>() {
 
                     @Override
-                    protected Void doInBackground(Void... voids) {
-                        controller.entryC.newEntry(
+                    protected EntryWrapper doInBackground(Void... voids) {
+                        EntryWrapper entry = controller.entryC.newEntry(
                                 startDate,
                                 Double.parseDouble(tripLengthET.getText().toString()),
                                 Double.parseDouble(litresFilledET.getText().toString()),
@@ -267,7 +265,12 @@ public class MainActivity extends AppCompatActivity {
                                 ((Car) carChoices.getSelectedItem()).getCid(),
                                 ((PetrolType) fuelChoices.getSelectedItem()).getPid()
                         );
-                        return null;
+                        return entry;
+                    }
+
+                    @Override
+                    protected void onPostExecute(EntryWrapper entry) {
+                        addPrevTripTagsToEntry(entry);
                     }
                 }.execute();
 
@@ -276,6 +279,72 @@ public class MainActivity extends AppCompatActivity {
         //displaying the dialogue to the UI
         addEntryAlert.create().show();
     }
+
+    public void addPrevTripTagsToEntry(final EntryWrapper entry) {
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View addEntryLayout = layoutInflater.inflate(R.layout.add_prev_tags_to_entry, null);
+
+        AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(this);
+        addEntryAlert.setTitle("Add tags for the previous trip");
+        addEntryAlert.setView(addEntryLayout);
+//        addEntryAlert.setNegativeButton("Cancel", null);
+        addEntryAlert.setPositiveButton("Next", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                addNextTripTagsToEntry(entry);
+            }
+        });
+        addEntryAlert.create().show();
+    }
+
+    public void addNextTripTagsToEntry(final EntryWrapper entry) {
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View addEntryLayout = layoutInflater.inflate(R.layout.add_next_tags_to_entry, null);
+
+        AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(this);
+        addEntryAlert.setTitle("Add tags about the fill up");
+        addEntryAlert.setView(addEntryLayout);
+//        addEntryAlert.setNegativeButton("Cancel", null);
+        addEntryAlert.setPositiveButton("Next", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                addNotesToEntry(entry);
+            }
+        });
+        addEntryAlert.create().show();
+    }
+
+    public void addNotesToEntry(final EntryWrapper entry) {
+        LayoutInflater layoutInflater = LayoutInflater.from(this);
+        View addEntryLayout = layoutInflater.inflate(R.layout.add_notes_to_entry, null);
+
+        final EditText noteET = addEntryLayout.findViewById(R.id.entry_note);
+
+        AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(this);
+        addEntryAlert.setTitle("Add a note to the entry");
+        addEntryAlert.setView(addEntryLayout);
+//        addEntryAlert.setNegativeButton("Cancel", null);
+        addEntryAlert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                new AsyncTask<Void, Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        entry.addNote(noteET.getText().toString());
+                        return null;
+                    }
+                }.execute();
+
+            }
+        });
+        addEntryAlert.create().show();
+    }
+
 
     public void createFuelTypeDialogue() {
         LayoutInflater layoutInflater = LayoutInflater.from(this);

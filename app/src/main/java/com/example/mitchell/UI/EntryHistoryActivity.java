@@ -15,6 +15,7 @@ import android.widget.ListView;
 import java.util.Arrays;
 import java.util.List;
 
+import Controller.Controller;
 import Models.Entry;
 import Controller.EntryWrapper;
 import database.AppDatabase;
@@ -51,20 +52,28 @@ public class EntryHistoryActivity extends AppCompatActivity {
             new AdapterView.OnItemClickListener() {
                 @Override
                 public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Entry entry = (Entry) parent.getItemAtPosition(position);
+                    final Entry entry = (Entry) parent.getItemAtPosition(position);
                     Log.d("R", String.format("pos: %d, id: %d", position, id));
                     Log.d("R", String.valueOf(entry.getEid()));
-//                    openEntry(entry);
+                    new AsyncTask<Void, Void, EntryWrapper>() {
+
+                        @Override
+                        protected EntryWrapper doInBackground(Void... voids) {
+                            return Controller.getCurrentController().entryC.getEntry(entry.getEid());
+                        }
+
+                        @Override
+                        protected void onPostExecute(EntryWrapper entry) {
+                            openEntry(entry);
+                        }
+                    }.execute();
+
 //                    entryAdapter.notifyDataSetChanged();
                 }
             }
         );
-
         fillList();
-
-
     }
-
 
     @Override
     /**
@@ -111,11 +120,11 @@ public class EntryHistoryActivity extends AppCompatActivity {
      * used to handle the opening of a specific entry from the list
      * @param entry
      */
-//    public void openEntry(EntryWrapper entry) {
-//        Intent intent = new Intent(this, EntryActivity.class);
-//        intent.putExtra("eid", entry.getEid());
-//        Log.d("R", String.valueOf(entry.getEid()));
-//        startActivity(intent);
-//    }
+    public void openEntry(EntryWrapper entry) {
+        Intent intent = new Intent(this, EntryActivity.class);
+        intent.putExtra("eid", entry.getEid());
+        Log.d("R", String.valueOf(entry.getEid()));
+        startActivity(intent);
+    }
 
 }

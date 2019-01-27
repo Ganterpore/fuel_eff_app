@@ -35,7 +35,7 @@ public interface EntryDao {
     Cursor getAllCursor();
 
     @Query("SELECT * FROM entry WHERE eid = :eid")
-    Entry getEntry(int eid);
+    Entry getEntry(long eid);
 
     @Query("SELECT COUNT(*) FROM entry")
     int getCount();
@@ -44,7 +44,7 @@ public interface EntryDao {
     void insertAll(Entry... entries);
 
     @Insert
-    void addEntry(Entry entry);
+    long addEntry(Entry entry);
 
     @Delete
     void deleteEntry(Entry entry);
@@ -52,8 +52,8 @@ public interface EntryDao {
     @Delete
     void deleteAll(Entry... entries);
 
-    @Query("DELETE FROM entry WHERE eid = :entryid")
-    void deleteId(int entryid);
+    @Query("DELETE FROM entry WHERE eid = :entryId")
+    void deleteId(long entryId);
 
     @Query("SELECT 100*(SUM(litres)/SUM(trip)) FROM entry WHERE car = :cid")
     double getAverageEfficiency(int cid);
@@ -74,7 +74,7 @@ public interface EntryDao {
     @Query("SELECT * FROM entrytag WHERE tid IN " +
             "(SELECT tid FROM tagsonentry " +
             "WHERE eid = :eid & nextTrip = :nextTrip)")
-    List<EntryTag> getTagsOnEntry(int eid, boolean nextTrip);
+    List<EntryTag> getTagsOnEntry(long eid, boolean nextTrip);
 
     @Insert()
     void addTagToEntry(TagsOnEntry tag);
@@ -83,7 +83,7 @@ public interface EntryDao {
     void addNote(Note note);
 
     @Query("SELECT * FROM note WHERE eid = :eid")
-    Note getNote(int eid);
+    Note getNote(long eid);
 
     @Query("SELECT * FROM entrytag WHERE tid = :tid")
     EntryTag getTag(int tid);

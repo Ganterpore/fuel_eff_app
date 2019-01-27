@@ -1,5 +1,7 @@
 package Controller;
 
+import android.util.Log;
+
 import java.util.List;
 
 import Models.Entry;
@@ -11,15 +13,33 @@ import database.AppDatabase;
 public class EntryWrapper {
     Entry entry;
     private AppDatabase db;
+    private List<EntryTag> nextTags;
+    private List<EntryTag> prevTags;
+    private String notes;
 
     public EntryWrapper(int eid, AppDatabase db) {
         this.entry = db.entryDao().getEntry(eid);
         this.db = db;
+        this.nextTags = db.entryDao().getTagsOnEntry(entry.getEid(), true);
+        this.prevTags = db.entryDao().getTagsOnEntry(entry.getEid(), false);
+        try {
+            this.notes = db.entryDao().getNote(entry.getEid()).getNote();
+        } catch (NullPointerException e) {
+            this.notes = "";
+        }
     }
 
     public EntryWrapper(Entry entry, AppDatabase db) {
         this.entry = entry;
         this.db = db;
+        this.nextTags = db.entryDao().getTagsOnEntry(entry.getEid(), true);
+        this.prevTags = db.entryDao().getTagsOnEntry(entry.getEid(), false);
+        try {
+            this.notes = db.entryDao().getNote(entry.getEid()).getNote();
+        } catch (NullPointerException e) {
+            this.notes = "";
+        }
+        Log.d("A", "EntryWrapper: "+notes);
     }
 
     public EntryWrapper(long date, double trip, double litres, double price, int car, int fuel, AppDatabase db) {
@@ -30,19 +50,29 @@ public class EntryWrapper {
     public void addTags(boolean nextTrip, EntryTag... tags) {
         for(EntryTag tag : tags) {
             db.entryDao().addTagToEntry(new TagsOnEntry(entry.getEid(), tag.getTid(), nextTrip));
+            if(nextTrip) {
+                nextTags.add(tag);
+            } else {
+                prevTags.add(tag);
+            }
         }
     }
 
     public List<EntryTag> getTags(boolean nextTrip) {
-        return db.entryDao().getTagsOnEntry(entry.getEid(), nextTrip);
+        if(nextTrip) {
+            return nextTags;
+        } else {
+            return prevTags;
+        }
     }
 
     public void addNote(String note) {
         db.entryDao().addNote(new Note(note, entry.getEid()));
+        this.notes = note;
     }
 
-    public Note getNote() {
-        return db.entryDao().getNote(entry.getEid());
+    public String getNote() {
+        return notes;
     }
 
     public int getEid() {

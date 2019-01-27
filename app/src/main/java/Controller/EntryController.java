@@ -25,8 +25,9 @@ public class EntryController {
 
     public EntryWrapper newEntry(long date, double trip, double litres, double price, int car, int fuel) {
         EntryWrapper entry = new EntryWrapper(date, trip, litres, price, car, fuel, db);
-        this.db.entryDao().addEntry(entry.entry);
+        int eid = (int) this.db.entryDao().addEntry(entry.entry);
         Log.d("A", "newEntry: Entry added");
+        entry.entry.setEid(eid);
         return entry;
     }
 
