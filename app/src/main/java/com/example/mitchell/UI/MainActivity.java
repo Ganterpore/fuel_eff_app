@@ -35,6 +35,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -50,7 +51,7 @@ import static java.lang.System.exit;
 /**
  * initial class created on startup
  */
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements DatabaseObserver {
     Controller controller = null;
     int carID;
     private List<Car> cars;
@@ -84,12 +85,12 @@ public class MainActivity extends AppCompatActivity {
         updateDetails(this);
 
         //creating the add entry button
-
+        final MainActivity activity = this;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             //when clicked a new entry will be created
             public void onClick(View view) {
-                newEntry(view);
+                NewEntryDialogueBuilder.newEntry(activity, activity, cars, fuels);
             }
         });
     }
@@ -132,7 +133,8 @@ public class MainActivity extends AppCompatActivity {
             protected void onPostExecute(Boolean carExists) {
                 activity.showProgress(false);
                 if(!carExists) {
-                    activity.createCarDialogue();
+                    CreateCarDialogueBuilder.createCarDialogue(activity, activity, new ArrayList<Car>() {
+                    });
                 }
             }
         }.execute();
@@ -164,7 +166,7 @@ public class MainActivity extends AppCompatActivity {
             case R.id.action_settings:
                 return true;
             case R.id.action_add_car:
-                createCarDialogue();
+                CreateCarDialogueBuilder.createCarDialogue(this, this, cars);
                 break;
         }
         //noinspection SimplifiableIfStatement
@@ -174,272 +176,6 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    public void newEntry(View view) {
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View addEntryLayout = layoutInflater.inflate(R.layout.new_entry_dialogue_box, null);
-
-        final EditText dateET = addEntryLayout.findViewById(R.id.entry_date);
-        final EditText tripLengthET = addEntryLayout.findViewById(R.id.trip_length);
-        final EditText litresFilledET = addEntryLayout.findViewById(R.id.fill_up_litres);
-        final EditText priceET = addEntryLayout.findViewById(R.id.entry_price);
-        final Spinner carChoices = addEntryLayout.findViewById(R.id.car_used);
-        final Button addCarButton = addEntryLayout.findViewById(R.id.add_car_button);
-        final Spinner fuelChoices = addEntryLayout.findViewById(R.id.fuel_used);
-        final Button addFuelButton = addEntryLayout.findViewById(R.id.add_fuel_button);
-
-
-
-        ArrayAdapter<Car> carsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item);
-        carsAdapter.addAll(cars);
-        carChoices.setAdapter(carsAdapter);
-
-        addCarButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createCarDialogue();
-            }
-        });
-
-        ArrayAdapter<PetrolType> fuelsAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item);
-        fuelsAdapter.addAll(fuels);
-
-        fuelChoices.setAdapter(fuelsAdapter);
-
-        addFuelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                createFuelTypeDialogue();
-            }
-        });
-
-
-        dateET.setOnClickListener(new View.OnClickListener() {
-            @RequiresApi(api = Build.VERSION_CODES.N)
-            @Override
-            public void onClick(View view) {
-                //hide keyboard
-                InputMethodManager imm = (InputMethodManager) MainActivity.this.getSystemService(MainActivity.INPUT_METHOD_SERVICE);
-                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-                //open date picker
-                DatePickerDialog datePicker = new DatePickerDialog(MainActivity.this);
-                datePicker.setOnDateSetListener(new DatePickerDialog.OnDateSetListener() {
-                    @Override
-                    public void onDateSet(DatePicker datePicker, int year, int month, int day) {
-                        dateET.setText(day+"/"+(month+1)+"/"+year);
-                    }
-                });
-                datePicker.show();
-            }
-        });
-        final MainActivity activity = this;
-        //building the alert dialogue
-        AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(this);
-        addEntryAlert.setTitle("New Entry");
-        addEntryAlert.setView(addEntryLayout);
-        addEntryAlert.setNegativeButton("Cancel", null);
-        addEntryAlert.setPositiveButton("Next", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                final long startDate;
-                try {
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-                    Date date = sdf.parse(dateET.getText().toString());
-                    startDate = date.getTime();
-
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                    Toast.makeText(activity, "incorrect Date format given", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                new AsyncTask<Void, Void, EntryWrapper>() {
-
-                    @Override
-                    protected EntryWrapper doInBackground(Void... voids) {
-                        EntryWrapper entry = controller.entryC.newEntry(
-                                startDate,
-                                Double.parseDouble(tripLengthET.getText().toString()),
-                                Double.parseDouble(litresFilledET.getText().toString()),
-                                Double.parseDouble(priceET.getText().toString()),
-                                ((Car) carChoices.getSelectedItem()).getCid(),
-                                ((PetrolType) fuelChoices.getSelectedItem()).getPid()
-                        );
-                        return entry;
-                    }
-
-                    @Override
-                    protected void onPostExecute(EntryWrapper entry) {
-                        addPrevTripTagsToEntry(entry);
-                    }
-                }.execute();
-
-            }
-        });
-        //displaying the dialogue to the UI
-        addEntryAlert.create().show();
-    }
-
-    public void addPrevTripTagsToEntry(final EntryWrapper entry) {
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View addEntryLayout = layoutInflater.inflate(R.layout.add_prev_tags_to_entry, null);
-
-        AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(this);
-        addEntryAlert.setTitle("Add tags for the previous trip");
-        addEntryAlert.setView(addEntryLayout);
-//        addEntryAlert.setNegativeButton("Cancel", null);
-        addEntryAlert.setPositiveButton("Next", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-
-                addNextTripTagsToEntry(entry);
-            }
-        });
-        addEntryAlert.create().show();
-    }
-
-    public void addNextTripTagsToEntry(final EntryWrapper entry) {
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View addEntryLayout = layoutInflater.inflate(R.layout.add_next_tags_to_entry, null);
-
-        AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(this);
-        addEntryAlert.setTitle("Add tags about the fill up");
-        addEntryAlert.setView(addEntryLayout);
-//        addEntryAlert.setNegativeButton("Cancel", null);
-        addEntryAlert.setPositiveButton("Next", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                addNotesToEntry(entry);
-            }
-        });
-        addEntryAlert.create().show();
-    }
-
-    public void addNotesToEntry(final EntryWrapper entry) {
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View addEntryLayout = layoutInflater.inflate(R.layout.add_notes_to_entry, null);
-
-        final EditText noteET = addEntryLayout.findViewById(R.id.entry_note);
-
-        AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(this);
-        addEntryAlert.setTitle("Add a note to the entry");
-        addEntryAlert.setView(addEntryLayout);
-//        addEntryAlert.setNegativeButton("Cancel", null);
-        addEntryAlert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                new AsyncTask<Void, Void, Void>() {
-
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        entry.addNote(noteET.getText().toString());
-                        return null;
-                    }
-                }.execute();
-
-            }
-        });
-        addEntryAlert.create().show();
-    }
-
-
-    public void createFuelTypeDialogue() {
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View addFuelLayout  =   layoutInflater.inflate(R.layout.new_fuel_dialogue_box, null);
-
-        final EditText fuelName = addFuelLayout.findViewById(R.id.fuel_name);
-        final EditText fuelPercent = addFuelLayout.findViewById(R.id.fuel_percent);
-
-        AlertDialog.Builder addFuelAlert = new AlertDialog.Builder(this);
-        addFuelAlert.setTitle("New fuel type");
-        addFuelAlert.setView(addFuelLayout);
-        addFuelAlert.setNegativeButton("Cancel", null);
-        addFuelAlert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-                new AsyncTask<Void, Void, PetrolType>() {
-
-                    @Override
-                    protected PetrolType doInBackground(Void... voids) {
-                        long fuelID = Controller.getCurrentController().addFuel(
-                                fuelName.getText().toString(),
-                                Integer.parseInt(fuelPercent.getText().toString())
-                        );
-                        PetrolType fuel = Controller.getCurrentController().getFuel(fuelID);
-                        return fuel;
-                    }
-
-                    @Override
-                    protected void onPostExecute(PetrolType petrolType) {
-                        fuels.add(petrolType);
-                    }
-                }.execute();
-            }
-        });
-
-        addFuelAlert.create().show();
-    }
-
-    public void createCarDialogue() {
-        LayoutInflater layoutInflater = LayoutInflater.from(this);
-        View addCarLayout = layoutInflater.inflate(R.layout.new_car_dialogue_box, null);
-        final EditText carNameET = addCarLayout.findViewById(R.id.car_name);
-        final EditText licensePlateET = addCarLayout.findViewById(R.id.license_plate);
-        final EditText makeET = addCarLayout.findViewById(R.id.make);
-        final EditText modelET = addCarLayout.findViewById(R.id.model);
-        final MainActivity activity = this;
-        //building the alert dialogue
-        AlertDialog.Builder addCarAlert = new AlertDialog.Builder(this);
-        addCarAlert.setTitle("New car");
-        addCarAlert.setView(addCarLayout);
-        addCarAlert.setNegativeButton("Cancel", null);
-        addCarAlert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialogInterface, int i) {
-//                accountController.requestContact(emailEt.getText().toString());
-                addCarToDatabaseAndUpdate(activity, carNameET.getText().toString(),
-                        licensePlateET.getText().toString(),
-                        makeET.getText().toString(),
-                        modelET.getText().toString());
-
-            }
-        });
-        //displaying the dialogue to the UI
-        addCarAlert.create().show();
-    }
-
-    public static void addCarToDatabaseAndUpdate(final MainActivity activity, final String carName,
-                                                 final String licensePlate, final String make, final String model) {
-        new AsyncTask<Void, Void, String>() {
-
-            @Override
-            protected String doInBackground(Void... voids) {
-                String cid = Controller.getCurrentController().newCar(carName, licensePlate, make, model);
-                return cid;
-            }
-
-            @Override
-            protected void onPostExecute(String cid) {
-                //first set the newly created car ID as the default
-                Properties properties = new Properties();
-                try {
-                    properties.load(activity.getAssets().open("settings.properties"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    exit(1);
-                }
-                properties.setProperty("car", cid);
-                Car car = new Car(Integer.parseInt(cid), licensePlate, model, make, carName);
-                activity.cars.add(car);
-
-                //refresh the page so the newest details are there
-//                MainActivity.updateDetails(activity);
-            }
-        }.execute();
-
     }
 
     public void openHistory(View view) {
@@ -482,4 +218,17 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void notifyChange(Object object, String type) {
+        switch (type) {
+            case DatabaseObserver.FUEL:
+                fuels.add((PetrolType) object);
+                break;
+            case DatabaseObserver.CAR:
+                cars.add((Car) object);
+                break;
+            case DatabaseObserver.ENTRY:
+                //TODO update details on the page
+        }
+    }
 }
