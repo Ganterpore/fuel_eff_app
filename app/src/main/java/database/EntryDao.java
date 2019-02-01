@@ -73,11 +73,14 @@ public interface EntryDao {
 
     @Query("SELECT * FROM entrytag WHERE tid IN " +
             "(SELECT tid FROM tagsonentry " +
-            "WHERE eid = :eid & nextTrip = :nextTrip)")
+            "WHERE eid = :eid AND nextTrip = :nextTrip)")
     List<EntryTag> getTagsOnEntry(long eid, boolean nextTrip);
 
     @Insert()
-    void addTagToEntry(TagsOnEntry tag);
+    long addTagToEntry(TagsOnEntry tag);
+
+    @Insert()
+    void addTagsToEntry(TagsOnEntry... tag);
 
     @Insert()
     void addNote(Note note);
@@ -108,7 +111,7 @@ public interface EntryDao {
     List<Car> getAllCars();
 
     @Insert
-    void addTag(EntryTag tag);
+    long addTag(EntryTag tag);
 
     @Insert
     long addFuel(PetrolType fuel);

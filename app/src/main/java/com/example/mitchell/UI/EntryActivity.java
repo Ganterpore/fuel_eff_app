@@ -1,7 +1,6 @@
 package com.example.mitchell.UI;
 
 import android.arch.persistence.room.Room;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -10,6 +9,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
+
+import java.util.Arrays;
 
 import Controller.Controller;
 import Controller.EntryWrapper;
@@ -39,7 +40,9 @@ public class EntryActivity extends AppCompatActivity {
         final TextView distance = findViewById(R.id.displayDistanceTravelled);
         final TextView cost = findViewById(R.id.displayCost);
         final TextView cpkm = findViewById(R.id.displayCentsPerKilometre);
-        final TextView note = findViewById(R.id.displayNote);
+        final TextView note = findViewById(R.id.display_note);
+        final TextView prevTags = findViewById(R.id.prev_tags);
+        final TextView nextTags = findViewById(R.id.next_tags);
 
         if(getIntent().hasExtra("eid")) {
             final int eid = getIntent().getIntExtra("eid", 0);
@@ -59,6 +62,9 @@ public class EntryActivity extends AppCompatActivity {
                     cost.setText(String.format("Cost: $%3.2f", entry.getCost()));
                     cpkm.setText(String.format("cost/distance: %3.2fc/km", entry.getCPerKm()));
                     note.setText(String.format("Note:\n"+ entry.getNote()));
+
+                    prevTags.setText("Prev trip:\n"+Arrays.toString(entry.getTags(false).toArray()));
+                    nextTags.setText("Next trip:\n"+Arrays.toString(entry.getTags(true).toArray()));
                 }
             }.execute();
         } else {

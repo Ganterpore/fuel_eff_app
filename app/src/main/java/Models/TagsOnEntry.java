@@ -6,7 +6,7 @@ import android.arch.persistence.room.ForeignKey;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
-@Entity(primaryKeys = {"eid", "tid"},
+@Entity(primaryKeys = {"eid", "tid", "nextTrip"},
         foreignKeys = {
                 @ForeignKey(entity = Entry.class,
                         parentColumns = "eid",

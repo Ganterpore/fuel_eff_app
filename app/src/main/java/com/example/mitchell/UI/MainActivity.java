@@ -43,6 +43,7 @@ import java.util.Properties;
 
 import Controller.Controller;
 import Models.Car;
+import Models.EntryTag;
 import Models.PetrolType;
 import Controller.EntryWrapper;
 
@@ -56,6 +57,7 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
     int carID;
     private List<Car> cars;
     private List<PetrolType> fuels;
+    private List<EntryTag> tags;
     private TextView efficiency;
     private TextView distance;
     private TextView cost;
@@ -90,7 +92,7 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
             @Override
             //when clicked a new entry will be created
             public void onClick(View view) {
-                NewEntryDialogueBuilder.newEntry(activity, activity, cars, fuels);
+                NewEntryDialogueBuilder.newEntry(activity, activity, cars, fuels, tags);
             }
         });
     }
@@ -103,6 +105,7 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
 
                 activity.fuels = Controller.getCurrentController().getAllFuels();
                 activity.cars = Controller.getCurrentController().getAllCars();
+                activity.tags = Controller.getCurrentController().getAllTags();
                 if(activity.cars.size()==0) { //if there are currently no cars, we must create one
 //                    activity.createCarDialogue();
                     return false;
@@ -227,6 +230,8 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
             case DatabaseObserver.CAR:
                 cars.add((Car) object);
                 break;
+            case DatabaseObserver.TAG:
+                tags.add((EntryTag) object);
             case DatabaseObserver.ENTRY:
                 //TODO update details on the page
         }

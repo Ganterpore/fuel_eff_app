@@ -23,19 +23,22 @@
         android:id="@+id/license_plate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter license Plate..."/>
+        android:hint="Enter license Plate..."
+        android:inputType="textCapCharacters"/>
 
     <EditText
         android:id="@+id/make"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter make..."/>
+        android:hint="Enter make..."
+        android:inputType="textCapWords"/>
 
     <EditText
         android:id="@+id/model"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter model..."/>
+        android:hint="Enter model..."
+        android:inputType="textCapWords"/>
 
 
 </LinearLayout>

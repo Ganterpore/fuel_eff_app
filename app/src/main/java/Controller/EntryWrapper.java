@@ -2,6 +2,7 @@ package Controller;
 
 import android.util.Log;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import Models.Entry;
@@ -45,9 +46,12 @@ public class EntryWrapper {
     public EntryWrapper(long date, double trip, double litres, double price, int car, int fuel, AppDatabase db) {
         this.db = db;
         this.entry = new Entry(date, trip, litres, price, car, fuel);
+        this.prevTags = new ArrayList<>();
+        this.nextTags = new ArrayList<>();
+        this.notes = "";
     }
 
-    public void addTags(boolean nextTrip, EntryTag... tags) {
+    public void addTags(boolean nextTrip, List<EntryTag> tags) {
         for(EntryTag tag : tags) {
             db.entryDao().addTagToEntry(new TagsOnEntry(entry.getEid(), tag.getTid(), nextTrip));
             if(nextTrip) {

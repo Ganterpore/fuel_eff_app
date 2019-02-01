@@ -5,27 +5,36 @@ import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.os.Build;
-import android.provider.ContactsContract;
 import android.support.annotation.RequiresApi;
 import android.support.v7.app.AlertDialog;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import Controller.Controller;
 import Controller.EntryWrapper;
 import Models.Car;
+import Models.Entry;
+import Models.EntryTag;
 import Models.PetrolType;
 
 public class NewEntryDialogueBuilder implements DatabaseObserver {
@@ -33,8 +42,11 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
     private DatabaseObserver observer;
     private ArrayAdapter<Car> carArrayAdapter;
     private ArrayAdapter<PetrolType> fuelArrayAdapter;
+    private TagAdapter prevTagAdapter;
+    private TagAdapter nextTagAdapter;
 
-    public static void newEntry(final DatabaseObserver observer, final MainActivity activity, final List<Car> cars, List<PetrolType> fuels) {
+    public static void newEntry(final DatabaseObserver observer, final MainActivity activity,
+                                final List<Car> cars, List<PetrolType> fuels, List<EntryTag> tags) {
         NewEntryDialogueBuilder.currentInstance = new NewEntryDialogueBuilder();
         currentInstance.observer = observer;
 
@@ -72,6 +84,8 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
             }
         });
 
+        currentInstance.nextTagAdapter = new TagAdapter(tags, activity);
+        currentInstance.prevTagAdapter = new TagAdapter(tags, activity);
 
         dateET.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.N)
@@ -142,6 +156,21 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         View addEntryLayout = layoutInflater.inflate(R.layout.add_prev_tags_to_entry, null);
 
+        TextView addTag = addEntryLayout.findViewById(R.id.add_tag);
+        addTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NewTagDialogueBuilder.createTagDialogue(currentInstance, activity);
+            }
+        });
+
+        final RecyclerView allTags = addEntryLayout.findViewById(R.id.tag_list);
+        allTags.setAdapter(currentInstance.prevTagAdapter);
+
+        RecyclerView.LayoutManager manager = new LinearLayoutManager(activity);
+        allTags.setLayoutManager(manager);
+
+
         AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(activity);
         addEntryAlert.setTitle("Add tags for the previous trip");
         addEntryAlert.setView(addEntryLayout);
@@ -150,6 +179,17 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
 
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                new AsyncTask<Void, Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        List<EntryTag> checkedTags = currentInstance.prevTagAdapter.getCheckedTags();
+                        Log.d("R", "doInBackground: adding tags"+ Arrays.toString(checkedTags.toArray()));
+                        entry.addTags(false, checkedTags);
+
+                        return null;
+                    }
+                }.execute();
 
                 addNextTripTagsToEntry(entry, observer, activity);
             }
@@ -161,14 +201,40 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         View addEntryLayout = layoutInflater.inflate(R.layout.add_next_tags_to_entry, null);
 
+        TextView addTag = addEntryLayout.findViewById(R.id.add_tag);
+        addTag.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                NewTagDialogueBuilder.createTagDialogue(currentInstance, activity);
+            }
+        });
+
+        final RecyclerView allTags = addEntryLayout.findViewById(R.id.tag_list);
+        allTags.setAdapter(currentInstance.nextTagAdapter);
+
+        RecyclerView.LayoutManager manager = new LinearLayoutManager(activity);
+        allTags.setLayoutManager(manager);
+
+
         AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(activity);
-        addEntryAlert.setTitle("Add tags about the fill up");
+        addEntryAlert.setTitle("Add tags for the next trip");
         addEntryAlert.setView(addEntryLayout);
 //        addEntryAlert.setNegativeButton("Cancel", null);
         addEntryAlert.setPositiveButton("Next", new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
+                new AsyncTask<Void, Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        List<EntryTag> checkedTags = currentInstance.nextTagAdapter.getCheckedTags();
+                        Log.d("R", "doInBackground: adding tags"+ Arrays.toString(checkedTags.toArray()));
+                        entry.addTags(true, checkedTags);
+                        return null;
+                    }
+                }.execute();
+                Log.d("R", "onClick: notes dialogue being created");
                 addNotesToEntry(entry, observer, activity);
             }
         });
@@ -203,6 +269,80 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         addEntryAlert.create().show();
     }
 
+    public static class TagViewHolder extends RecyclerView.ViewHolder {
+        View itemView;
+        EntryTag tag;
+
+        public TagViewHolder(View itemView) {
+            super(itemView);
+            this.itemView = itemView;
+            this.setIsRecyclable(false);
+        }
+
+        public void build(EntryTag tag) {
+            this.tag = tag;
+            TextView tagName = itemView.findViewById(R.id.list_tag_name);
+            tagName.setText(tag.getName());
+        }
+
+        public boolean isChecked() {
+            CheckBox checkBox = itemView.findViewById(R.id.check_box);
+            return checkBox.isChecked();
+        }
+    }
+
+    public static class TagAdapter extends RecyclerView.Adapter<TagViewHolder> {
+        private ArrayList<EntryTag> tags;
+        private Activity activity;
+        private ArrayList<TagViewHolder> tagViewHolders;
+
+        public TagAdapter(List<EntryTag> tags, Activity activity) {
+            this.activity = activity;
+            this.tags = new ArrayList<>();
+            this.tagViewHolders = new ArrayList<>();
+            this.addAll(tags);
+        }
+
+        public void addAll(List<EntryTag> newTags) {
+            tags.addAll(newTags);
+            Log.d("F", "addAll: tags added");
+        }
+
+        public void addTag(EntryTag tag) {
+            tags.add(tag);
+        }
+
+        @Override
+        public TagViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(activity).inflate(R.layout.tag_list_view, parent, false);
+            Log.d("F", "addAll: View inflated");
+
+            TagViewHolder tagVH = new TagViewHolder(v);
+            tagViewHolders.add(tagVH);
+            return tagVH;
+        }
+
+        @Override
+        public void onBindViewHolder(TagViewHolder holder, int position) {
+            holder.build(tags.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return tags.size();
+        }
+
+        public List<EntryTag> getCheckedTags() {
+            ArrayList<EntryTag> checkedTags = new ArrayList<>();
+            for(TagViewHolder tagViewHolder : tagViewHolders) {
+                if(tagViewHolder.isChecked()) {
+                    checkedTags.add(tagViewHolder.tag);
+                }
+            }
+            return checkedTags;
+        }
+    }
+
     @Override
     public void notifyChange(Object object, String type) {
 
@@ -214,6 +354,13 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
             case DatabaseObserver.FUEL:
                 PetrolType petrol = (PetrolType) object;
                 fuelArrayAdapter.add(petrol);
+                break;
+            case DatabaseObserver.TAG:
+                EntryTag tag = (EntryTag) object;
+                prevTagAdapter.addTag(tag);
+                prevTagAdapter.notifyDataSetChanged();
+                nextTagAdapter.addTag(tag);
+                nextTagAdapter.notifyDataSetChanged();
                 break;
         }
 

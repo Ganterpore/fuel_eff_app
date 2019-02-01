@@ -8,8 +8,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import Models.Car;
+import Models.Entry;
 import Models.EntryTag;
 import Models.PetrolType;
+import Models.TagsOnEntry;
 import database.AppDatabase;
 
 public class Controller {
@@ -35,15 +37,26 @@ public class Controller {
         return db.entryDao().getAllCars();
     }
 
-    public void addTag(String name) {
+    public long addTag(String name) {
         EntryTag tag = new EntryTag(name);
-        db.entryDao().addTag(tag);
+        return db.entryDao().addTag(tag);
     }
 
     public long addFuel(String name, int percent) {
         PetrolType fuel = new PetrolType(name, percent);
         return db.entryDao().addFuel(fuel);
     }
+//
+//    public long addTagToEntry(int tagID, int entryID, boolean nextTrip) {
+//        TagsOnEntry tag = new TagsOnEntry(entryID, tagID, nextTrip);
+//        return db.entryDao().addTagToEntry(tag);
+//    }
+//
+//    public void addTagsToEntry(List<EntryTag> tags, int entryID, boolean nextTrip) {
+//        for(EntryTag tag : tags) {
+//            addTagToEntry(tag.getTid(), entryID, nextTrip);
+//        }
+//    }
 
     public List<PetrolType> getAllFuels() {
         return db.entryDao().getAllFuels();
