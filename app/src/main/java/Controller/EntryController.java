@@ -31,7 +31,7 @@ public class EntryController {
         return entry;
     }
 
-    public List<EntryWrapper> getAllEntriesWithTag(int cid) {
+    public List<EntryWrapper> getAllEntries(int cid) {
         List<Entry> entries = db.entryDao().getAllEntries(cid);
         List<EntryWrapper> wrappedEntries = new ArrayList<>();
         for(Entry entry : entries) {

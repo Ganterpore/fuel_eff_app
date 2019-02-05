@@ -8,8 +8,13 @@
     tools:context="com.example.mitchell.UI.EntryHistoryActivity"
     tools:showIn="@layout/activity_entry_history">
 
-    <ListView
-        android:id="@+id/History"
+    <!--<ListView-->
+        <!--android:id="@+id/History"-->
+        <!--android:layout_width="match_parent"-->
+        <!--android:layout_height="match_parent" />-->
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/history"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"/>
 </android.support.constraint.ConstraintLayout>

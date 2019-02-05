@@ -1,17 +1,24 @@
 package com.example.mitchell.UI;
 
+import android.app.Activity;
 import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,8 +32,9 @@ import database.AppDatabase;
  */
 public class EntryHistoryActivity extends AppCompatActivity {
 
-    private ArrayAdapter<Entry> entryAdapter;
+    private EntryAdapter entryAdapter;
     private int carID;
+    private RecyclerView historyList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,40 +46,12 @@ public class EntryHistoryActivity extends AppCompatActivity {
         android.support.v7.app.ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        //building the list to be used to display history
-        entryAdapter = new ArrayAdapter<Entry>(this,
-                android.R.layout.simple_list_item_1);
-        ListView historyList = findViewById(R.id.History);
+        historyList = findViewById(R.id.history);
+        entryAdapter = new EntryAdapter(this);
         historyList.setAdapter(entryAdapter);
+        historyList.setLayoutManager(new LinearLayoutManager(this));
 
         carID = getIntent().getIntExtra("carID", 0);
-        Log.d("R", "onCreate: "+carID);
-
-        //sets up the ability to select items from the list
-        historyList.setOnItemClickListener(
-            new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    final Entry entry = (Entry) parent.getItemAtPosition(position);
-                    Log.d("R", String.format("pos: %d, id: %d", position, id));
-                    Log.d("R", String.valueOf(entry.getEid()));
-                    new AsyncTask<Void, Void, EntryWrapper>() {
-
-                        @Override
-                        protected EntryWrapper doInBackground(Void... voids) {
-                            return Controller.getCurrentController().entryC.getEntry(entry.getEid());
-                        }
-
-                        @Override
-                        protected void onPostExecute(EntryWrapper entry) {
-                            openEntry(entry);
-                        }
-                    }.execute();
-
-//                    entryAdapter.notifyDataSetChanged();
-                }
-            }
-        );
         fillList();
     }
 
@@ -92,25 +72,22 @@ public class EntryHistoryActivity extends AppCompatActivity {
         final AppDatabase db = Room.databaseBuilder(getApplicationContext(),
                 AppDatabase.class, "database-name").build();
 
-        new AsyncTask<Void, Void, List<Entry>>() {
+        new AsyncTask<Void, Void, List<EntryWrapper>>() {
             @Override
             /**
              * gets all the entries which will be added to the list
              * TODO again, remove database access from UI
              */
-            protected List<Entry> doInBackground(Void... voids) {
-                Log.d("R", "updating list");
-                return db.entryDao().getAllEntries(carID);
+            protected List<EntryWrapper> doInBackground(Void... voids) {
+                return Controller.getCurrentController().entryC.getAllEntries(carID);
             }
             @Override
             /**
              * adds all entries to the adapter
              */
-            protected void onPostExecute(List<Entry> item) {
-                Log.d("R", "updating adapter");
-                Log.d("R", "onPostExecute: "+Arrays.toString(item.toArray()));
+            protected void onPostExecute(List<EntryWrapper> entries) {
                 entryAdapter.clear();
-                entryAdapter.addAll(item);
+                entryAdapter.addAll(entries);
                 entryAdapter.notifyDataSetChanged();
             }
         }.execute();
@@ -125,6 +102,66 @@ public class EntryHistoryActivity extends AppCompatActivity {
         intent.putExtra("eid", entry.getEid());
         Log.d("R", String.valueOf(entry.getEid()));
         startActivity(intent);
+    }
+
+    public class EntryAdapter extends RecyclerView.Adapter<EntryViewHolder> {
+        private Activity activity;
+        private List<EntryWrapper> entries;
+
+        public EntryAdapter(Activity activity) {
+            this.activity = activity;
+            entries = new ArrayList<>();
+        }
+
+        public void clear() {
+            entries.clear();
+        }
+
+        public void addAll(List<EntryWrapper> newEntries) {
+            this.entries.addAll(newEntries);
+        }
+
+        @Override
+        public EntryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(activity).inflate(R.layout.entry_list_item, parent, false);
+            EntryViewHolder entryVH = new EntryViewHolder(v);
+            return entryVH;
+        }
+
+        @Override
+        public void onBindViewHolder(EntryViewHolder holder, int position) {
+            holder.build(entries.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return entries.size();
+        }
+    }
+
+
+    public class EntryViewHolder extends RecyclerView.ViewHolder {
+        private View itemView;
+
+        public EntryViewHolder(View itemView) {
+            super(itemView);
+            this.itemView = itemView;
+        }
+
+        public void build(final EntryWrapper entry) {
+            TextView listDate = itemView.findViewById(R.id.listDate);
+            TextView listEfficiency = itemView.findViewById(R.id.listEfficiency);
+
+            listDate.setText(entry.getDateAsString());
+            listEfficiency.setText(String.valueOf(entry.getEfficiency()));
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openEntry(entry);
+                }
+            });
+        }
     }
 
 }

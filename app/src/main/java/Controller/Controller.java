@@ -88,24 +88,24 @@ public class Controller {
         return db.entryDao().getFuel(pid);
     }
 
-    public List<TripWrapper> getAllTrips(int cid) {
-        List<Integer> entries = db.entryDao().getOrderedEid(cid);
-        List<TripWrapper> trips = new ArrayList<>();
-        for(int i=1;i<entries.size();i++) {
-            trips.add(new TripWrapper(entries.get(i-1), entries.get(i), db));
-        }
-        return trips;
-    }
+//    public List<TripWrapper> getAllTrips(int cid) {
+//        List<Integer> entries = db.entryDao().getOrderedEid(cid);
+//        List<TripWrapper> trips = new ArrayList<>();
+//        for(int i=1;i<entries.size();i++) {
+//            trips.add(new TripWrapper(entries.get(i-1), entries.get(i), db));
+//        }
+//        return trips;
+//    }
 
-    public List<TripWrapper> getTripsWithTags(int cid, int tid) {
-        List<TripWrapper> trips = getAllTrips(cid);
-        List<TripWrapper> tripsTrimmed = new ArrayList<>();
-        EntryTag tag = this.getTag(tid);
-        for(TripWrapper trip : trips) {
-            if(trip.getTags().contains(tag)) {
-                tripsTrimmed.add(trip);
-            }
-        }
-        return tripsTrimmed;
-    }
+//    public List<TripWrapper> getTripsWithTags(int cid, int tid) {
+//        List<TripWrapper> trips = getAllTrips(cid);
+//        List<TripWrapper> tripsTrimmed = new ArrayList<>();
+//        EntryTag tag = this.getTag(tid);
+//        for(TripWrapper trip : trips) {
+//            if(trip.getTags().contains(tag)) {
+//                tripsTrimmed.add(trip);
+//            }
+//        }
+//        return tripsTrimmed;
+//    }
 }

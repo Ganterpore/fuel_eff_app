@@ -10,13 +10,17 @@ public class TripWrapper {
     private List<EntryTag> tags;
     private Trip trip;
 
-    public TripWrapper(int entry1id, int entry2id, AppDatabase db) {
-        EntryWrapper entry1 = new EntryWrapper(entry1id, db);
-        EntryWrapper entry2 = new EntryWrapper(entry2id, db);
+    public TripWrapper(EntryWrapper entry1, EntryWrapper entry2) {
         this.trip = new Trip(entry1.entry, entry2.entry);
         this.tags = entry1.getTags(true);
         this.tags.addAll(entry2.getTags(false));
     }
+
+//    public TripWrapper(int entry1id, int entry2id, AppDatabase db) {
+//        EntryWrapper entry1 = new EntryWrapper(entry1id, db);
+//        EntryWrapper entry2 = new EntryWrapper(entry2id, db);
+//        new TripWrapper(entry1, entry2);
+//    }
 
     public List<EntryTag> getTags() {
         return tags;

@@ -2,7 +2,10 @@ package Controller;
 
 import android.util.Log;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import Models.Entry;
@@ -17,6 +20,14 @@ public class EntryWrapper {
     private List<EntryTag> nextTags;
     private List<EntryTag> prevTags;
     private String notes;
+
+    public static List<EntryWrapper> EntryWrappers(List<Entry> entries, AppDatabase db) {
+        ArrayList<EntryWrapper> entryWrappers = new ArrayList<>();
+        for (Entry entry: entries) {
+            entryWrappers.add(new EntryWrapper(entry, db));
+        }
+        return entryWrappers;
+    }
 
     public EntryWrapper(int eid, AppDatabase db) {
         this.entry = db.entryDao().getEntry(eid);
@@ -77,6 +88,10 @@ public class EntryWrapper {
 
     public String getNote() {
         return notes;
+    }
+
+    public String getDateAsString() {
+        return new SimpleDateFormat("dd/MM/yyyy").format(new Date(getDate()));
     }
 
     public int getEid() {
