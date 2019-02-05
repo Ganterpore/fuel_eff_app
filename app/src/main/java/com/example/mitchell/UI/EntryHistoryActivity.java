@@ -137,8 +137,11 @@ public class EntryHistoryActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
-    public void openTrip(TripWrapper trip) {
-        //TODO cerate trip activity
+    public void openTrip(int entry1, int entry2) {
+        Intent intent = new Intent(this, TripActivity.class);
+        intent.putExtra("entry1", entry1);
+        intent.putExtra("entry2", entry2);
+        startActivity(intent);
     }
 
     public class EntryAdapter extends RecyclerView.Adapter<EntryViewHolder> {
@@ -241,6 +244,8 @@ public class EntryHistoryActivity extends AppCompatActivity {
     public class TripViewHolder extends RecyclerView.ViewHolder {
         private View itemView;
         private TripWrapper trip;
+        private int entry1ID;
+        private int entry2ID;
 
         public TripViewHolder(View itemView) {
             super(itemView);
@@ -248,6 +253,8 @@ public class EntryHistoryActivity extends AppCompatActivity {
         }
 
         public void build(EntryWrapper entry1, EntryWrapper entry2) {
+            entry1ID = entry1.getEid();
+            entry2ID = entry2.getEid();
             trip = new TripWrapper(entry1, entry2);
             TextView tripDate = itemView.findViewById(R.id.tripDate);
             TextView tripLength = itemView.findViewById(R.id.trip_length);
@@ -258,7 +265,7 @@ public class EntryHistoryActivity extends AppCompatActivity {
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    openTrip(trip);
+                    openTrip(entry1ID, entry2ID);
                 }
             });
         }

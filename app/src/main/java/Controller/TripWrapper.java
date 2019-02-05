@@ -18,11 +18,12 @@ public class TripWrapper {
         this.tags.addAll(entry2.getTags(false));
     }
 
-//    public TripWrapper(int entry1id, int entry2id, AppDatabase db) {
+    public TripWrapper(int entry1id, int entry2id, AppDatabase db) {
+        this(new EntryWrapper(entry1id, db), new EntryWrapper(entry2id, db));
 //        EntryWrapper entry1 = new EntryWrapper(entry1id, db);
 //        EntryWrapper entry2 = new EntryWrapper(entry2id, db);
-//        new TripWrapper(entry1, entry2);
-//    }
+//        this(entry1, entry2);
+    }
 
     public List<EntryTag> getTags() {
         return tags;
