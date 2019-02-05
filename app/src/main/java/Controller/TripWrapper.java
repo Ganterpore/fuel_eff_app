@@ -1,5 +1,7 @@
 package Controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import Models.EntryTag;
@@ -28,5 +30,9 @@ public class TripWrapper {
 
     public Trip getTrip() {
         return trip;
+    }
+
+    public String getStartDateAsString() {
+        return new SimpleDateFormat("dd/MM/yyyy").format(new Date(trip.getStartDate()));
     }
 }

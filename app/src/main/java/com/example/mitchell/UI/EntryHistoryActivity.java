@@ -5,12 +5,15 @@ import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -26,6 +29,7 @@ import Controller.Controller;
 import Models.Entry;
 import Controller.EntryWrapper;
 import database.AppDatabase;
+import Controller.TripWrapper;
 
 /**
  * used to display a history of all entries that have been given
@@ -33,6 +37,7 @@ import database.AppDatabase;
 public class EntryHistoryActivity extends AppCompatActivity {
 
     private EntryAdapter entryAdapter;
+    private TripAdapter tripAdapter;
     private int carID;
     private RecyclerView historyList;
 
@@ -48,10 +53,17 @@ public class EntryHistoryActivity extends AppCompatActivity {
 
         historyList = findViewById(R.id.history);
         entryAdapter = new EntryAdapter(this);
+        tripAdapter = new TripAdapter(this);
         historyList.setAdapter(entryAdapter);
+//        historyList.setAdapter(tripAdapter);
         historyList.setLayoutManager(new LinearLayoutManager(this));
 
         carID = getIntent().getIntExtra("carID", 0);
+
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.type_switcher);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
+
         fillList();
     }
 
@@ -64,6 +76,23 @@ public class EntryHistoryActivity extends AppCompatActivity {
         super.onResume();
         fillList();
     }
+
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_entry:
+                    historyList.setAdapter(entryAdapter);
+                    return true;
+                case R.id.navigation_trip:
+                    historyList.setAdapter(tripAdapter);
+                    return true;
+            }
+            return false;
+        }
+    };
 
     /**
      * used to add all the entries to the list
@@ -89,6 +118,10 @@ public class EntryHistoryActivity extends AppCompatActivity {
                 entryAdapter.clear();
                 entryAdapter.addAll(entries);
                 entryAdapter.notifyDataSetChanged();
+
+                tripAdapter.clear();
+                tripAdapter.addAll(entries);
+                tripAdapter.notifyDataSetChanged();
             }
         }.execute();
     }
@@ -102,6 +135,10 @@ public class EntryHistoryActivity extends AppCompatActivity {
         intent.putExtra("eid", entry.getEid());
         Log.d("R", String.valueOf(entry.getEid()));
         startActivity(intent);
+    }
+
+    public void openTrip(TripWrapper trip) {
+        //TODO cerate trip activity
     }
 
     public class EntryAdapter extends RecyclerView.Adapter<EntryViewHolder> {
@@ -159,6 +196,69 @@ public class EntryHistoryActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     openEntry(entry);
+                }
+            });
+        }
+    }
+
+    public class TripAdapter extends RecyclerView.Adapter<TripViewHolder> {
+        Activity activity;
+        List<EntryWrapper> entries;
+
+        public TripAdapter(Activity activity) {
+            this.activity = activity;
+            this.entries = new ArrayList<>();
+        }
+
+        public void clear() {
+            entries.clear();
+        }
+
+        public void addAll(List<EntryWrapper> newEntries) {
+            entries.addAll(newEntries);
+        }
+
+        @Override
+        public TripViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(activity).inflate(R.layout.trip_list_item, parent, false);
+            TripViewHolder tripVH = new TripViewHolder(v);
+            return tripVH;
+        }
+
+        @Override
+        public void onBindViewHolder(TripViewHolder holder, int position) {
+            EntryWrapper entry1 = entries.get(position);
+            EntryWrapper entry2 = entries.get(position+1);
+            holder.build(entry1, entry2);
+        }
+
+        @Override
+        public int getItemCount() {
+            return entries.size()-1;
+        }
+    }
+
+    public class TripViewHolder extends RecyclerView.ViewHolder {
+        private View itemView;
+        private TripWrapper trip;
+
+        public TripViewHolder(View itemView) {
+            super(itemView);
+            this.itemView = itemView;
+        }
+
+        public void build(EntryWrapper entry1, EntryWrapper entry2) {
+            trip = new TripWrapper(entry1, entry2);
+            TextView tripDate = itemView.findViewById(R.id.tripDate);
+            TextView tripLength = itemView.findViewById(R.id.trip_length);
+
+            tripDate.setText(trip.getStartDateAsString());
+            tripLength.setText(String.valueOf(trip.getTrip().getDistance()));
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openTrip(trip);
                 }
             });
         }

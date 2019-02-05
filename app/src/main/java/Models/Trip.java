@@ -9,6 +9,7 @@ public class Trip {
     private double litres;
     private int car;
     private int fuel;
+    private long startDate;
 
     public Trip(Entry start, Entry finish) {
         distance = finish.getTrip();
@@ -17,6 +18,7 @@ public class Trip {
         litres = finish.getLitres();
         car = start.getCar();
         fuel = start.getFuel();
+        startDate = start.getDate();
     }
 
     //finds the days between two given dates
@@ -28,6 +30,10 @@ public class Trip {
 //        return (int) days;
 
         return (int) TimeUnit.DAYS.convert(finishDate-startDate, TimeUnit.MILLISECONDS);
+    }
+
+    public long getStartDate() {
+        return startDate;
     }
 
     public double getDistance() {
