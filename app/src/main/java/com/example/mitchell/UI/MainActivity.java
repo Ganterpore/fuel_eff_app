@@ -4,8 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
 import android.app.DatePickerDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.database.DataSetObserver;
 import android.os.AsyncTask;
 import android.os.Build;
@@ -22,6 +24,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -53,15 +56,18 @@ import static java.lang.System.exit;
  * initial class created on startup
  */
 public class MainActivity extends AppCompatActivity implements DatabaseObserver {
+    public static final String SHARED_PREFS_LOC = "com.ganterpore.fuel_eff";
     Controller controller = null;
     int carID;
     private List<Car> cars;
     private List<PetrolType> fuels;
     private List<EntryTag> tags;
+    private Car currentCar;
     private TextView efficiency;
     private TextView distance;
     private TextView cost;
     private TextView litres;
+    private TextView carName;
     private FloatingActionButton fab;
 
     /**
@@ -77,11 +83,17 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
 
         controller = new Controller(getApplicationContext());
 
+        carName = findViewById(R.id.car_name);
+
         efficiency = findViewById(R.id.AverageEfficiency);
         distance = findViewById(R.id.TotalDistance);
         cost = findViewById(R.id.TotalCost);
         litres = findViewById(R.id.TotalLitres);
         fab = (FloatingActionButton) findViewById(R.id.fab);
+
+        final Spinner carChoices = findViewById(R.id.car_chooser);
+        ArrayAdapter<Car> carArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item);
+        carChoices.setAdapter(carArrayAdapter);
 
         showProgress(true);
         updateDetails(this);
@@ -110,23 +122,22 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
 //                    activity.createCarDialogue();
                     return false;
                 } else {
-                    String defaultCid = String.valueOf(activity.cars.get(0).getCid());
+                    int defaultCid = activity.cars.get(0).getCid();
                     Log.d("A", "doInBackground: "+ Arrays.toString(activity.cars.toArray()));
 
-                    Properties properties = new Properties();
-                    try {
-                        properties.load(activity.getAssets().open("settings.properties"));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                        exit(1);
+                    SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFS_LOC, Context.MODE_PRIVATE);
+                    if(!preferences.contains("car")) {
+                        preferences.edit().putInt("car", defaultCid).apply();
                     }
-                    activity.carID = Integer.parseInt(properties.getProperty("car", defaultCid));
+                    activity.carID = preferences.getInt("car", defaultCid);
+
+                    activity.currentCar = Controller.getCurrentController().getCar(activity.carID);
 
                     activity.efficiency.setText(String.format("%3.2f", activity.controller.entryC.getAverageEfficiency(activity.carID)));
                     activity.distance.setText(String.format("%3.2f", activity.controller.entryC.getTotalDistance(activity.carID)));
                     activity.cost.setText(String.format("%3.2f", activity.controller.entryC.getTotalCost(activity.carID)));
                     activity.litres.setText(String.format("%3.2f", activity.controller.entryC.getTotalLitres(activity.carID)));
-
+                    activity.carName.setText(activity.currentCar.getName());
                  }
 
                 return true;
@@ -228,12 +239,83 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
                 fuels.add((PetrolType) object);
                 break;
             case DatabaseObserver.CAR:
-                cars.add((Car) object);
+                Car car = (Car) object;
+                cars.add(car);
+                CarSetter setCar = new CarSetter(this, car);
+                setCar.execute();
                 break;
             case DatabaseObserver.TAG:
                 tags.add((EntryTag) object);
             case DatabaseObserver.ENTRY:
                 //TODO update details on the page
+        }
+    }
+
+    public void openCarChooser(View view) {
+        final MainActivity activity = this;
+
+        final Spinner carChoices = findViewById(R.id.car_chooser);
+        ArrayAdapter<Car> carArrayAdapter = (ArrayAdapter<Car>) carChoices.getAdapter();
+        carArrayAdapter.clear();
+        carArrayAdapter.addAll(cars);
+        carChoices.setVisibility(View.VISIBLE);
+        carChoices.performClick();
+
+        carChoices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                CarSetter carSetter = new CarSetter(activity, cars.get(i));
+                carSetter.execute();
+                Log.d("R", "onItemSelected: "+cars.get(i));
+
+                carChoices.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                carChoices.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    public class CarSetter extends AsyncTask<Void, Void, Void> {
+        private MainActivity activity;
+        private Car car;
+        private double averageEfficiency;
+        private double totalDistance;
+        private double totalCost;
+        private double totalLitres;
+
+        public CarSetter(MainActivity activity, Car car) {
+            this.activity = activity;
+            this.car = car;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            averageEfficiency = activity.controller.entryC.getAverageEfficiency(car.getCid());
+            totalDistance = activity.controller.entryC.getTotalDistance(car.getCid());
+            totalCost = activity.controller.entryC.getTotalCost(car.getCid());
+            totalLitres = activity.controller.entryC.getTotalLitres(car.getCid());
+
+            SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFS_LOC, MODE_PRIVATE);
+            preferences.edit().putInt("car", car.getCid()).apply();
+
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            activity.currentCar = car;
+            activity.carName.setText(car.getName());
+            activity.carID = car.getCid();
+
+            activity.efficiency.setText(String.format("%3.2f", averageEfficiency));
+            activity.distance.setText(String.format("%3.2f", totalDistance));
+            activity.cost.setText(String.format("%3.2f", totalCost));
+            activity.litres.setText(String.format("%3.2f", totalLitres));
+            activity.carName.setText(car.getName());
         }
     }
 }

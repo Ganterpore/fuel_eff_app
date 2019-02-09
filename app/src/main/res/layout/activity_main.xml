@@ -20,11 +20,7 @@
 
     </android.support.design.widget.AppBarLayout>
 
-    <include
-        layout="@layout/content_main"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteY="161dp" />
+    <include layout="@layout/content_main" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
@@ -40,7 +36,7 @@
         style="?android:attr/progressBarStyleLarge"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
+        android:layout_gravity="center "
         android:visibility="gone" />
 
 </android.support.design.widget.CoordinatorLayout>

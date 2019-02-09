@@ -61,15 +61,6 @@ public class CreateCarDialogueBuilder {
 
             @Override
             protected void onPostExecute(String cid) {
-                //first set the newly created car ID as the default
-                Properties properties = new Properties();
-                try {
-                    properties.load(activity.getAssets().open("settings.properties"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                    exit(1);
-                }
-                properties.setProperty("car", cid);
                 Car car = new Car(Integer.parseInt(cid), licensePlate, model, make, carName);
                 observer.notifyChange(car, DatabaseObserver.CAR);
 
