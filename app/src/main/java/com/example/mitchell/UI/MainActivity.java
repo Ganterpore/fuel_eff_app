@@ -1,29 +1,74 @@
 package com.example.mitchell.UI;
 
-import android.arch.persistence.room.Room;
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
+import android.annotation.TargetApi;
+import android.app.DatePickerDialog;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.database.DataSetObserver;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.SpinnerAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import database.AppDatabase;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Properties;
+
+import Controller.Controller;
+import Models.Car;
+import Models.EntryTag;
+import Models.PetrolType;
+import Controller.EntryWrapper;
+
+import static java.lang.System.exit;
 
 /**
  * initial class created on startup
  */
-public class MainActivity extends AppCompatActivity {
-    //ID of message to be sent in intent
-    public static final String EXTRA_MESSAGE = "com.example.mitchell.test1.MESSAGE";
-
-    //database for the apps storage
-    public AppDatabase db;
+public class MainActivity extends AppCompatActivity implements DatabaseObserver {
+    public static final String SHARED_PREFS_LOC = "com.ganterpore.fuel_eff";
+    Controller controller = null;
+    int carID;
+    private List<Car> cars;
+    private List<PetrolType> fuels;
+    private List<EntryTag> tags;
+    private Car currentCar;
+    private TextView efficiency;
+    private TextView distance;
+    private TextView cost;
+    private TextView litres;
+    private TextView carName;
+    private FloatingActionButton fab;
 
     /**
      * automatically called when activity created.
@@ -36,47 +81,86 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        db = Room.databaseBuilder(getApplicationContext(),
-                AppDatabase.class, "database-name").build();
+        controller = new Controller(getApplicationContext());
 
-        //collecting text fields to be set for display
-        final TextView efficiency = findViewById(R.id.AverageEfficiency);
-        final TextView distance   = findViewById(R.id.TotalDistance);
-        final TextView cost       = findViewById(R.id.TotalCost);
-        final TextView litres     = findViewById(R.id.TotalLitres);
+        carName = findViewById(R.id.car_name);
 
-        //getting values for the text fields out from the app database
-        new AsyncTask<Void, Void, Double[]>() {
-            @Override
-            protected Double[] doInBackground(Void... voids) {
-                double  eff = db.entryDao().getAverageEfficiency();
-                double dist = db.entryDao().getTotalDistance();
-                double cost = db.entryDao().getTotalCost();
-                double litr = db.entryDao().getTotalLitres();
-                Double[] vals = {eff, dist, cost, litr};
-                return vals;
-            }
-            //setting the values of the text fields
-            @Override
-            protected void onPostExecute(Double[] vals) {
-                efficiency.setText(String.format("%3.2f", vals[0]));
-                distance.setText(String.format("%3.2f", vals[1]));;
-                cost.setText(String.format("%3.2f", vals[2]));;
-                litres.setText(String.format("%3.2f", vals[3]));;
+        efficiency = findViewById(R.id.AverageEfficiency);
+        distance = findViewById(R.id.TotalDistance);
+        cost = findViewById(R.id.TotalCost);
+        litres = findViewById(R.id.TotalLitres);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
 
-            }
-        }.execute();
+        final Spinner carChoices = findViewById(R.id.car_chooser);
+        ArrayAdapter<Car> carArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item);
+        carChoices.setAdapter(carArrayAdapter);
+
+        showProgress(true);
+        updateDetails(this);
 
         //creating the add entry button
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        final MainActivity activity = this;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             //when clicked a new entry will be created
             public void onClick(View view) {
-                newEntry(view);
+                NewEntryDialogueBuilder.newEntry(activity, activity, cars, fuels, tags);
             }
         });
+    }
 
+    private static void updateDetails(final MainActivity activity) {
+        new AsyncTask<Void, Void, Boolean>() {
+
+            @Override
+            protected Boolean doInBackground(Void... voids) {
+
+                activity.fuels = Controller.getCurrentController().getAllFuels();
+                activity.cars = Controller.getCurrentController().getAllCars();
+                activity.tags = Controller.getCurrentController().getAllTags();
+                if(activity.cars.size()==0) { //if there are currently no cars, we must create one
+//                    activity.createCarDialogue();
+                    return false;
+                } else {
+                    int defaultCid = activity.cars.get(0).getCid();
+                    Log.d("A", "doInBackground: "+ Arrays.toString(activity.cars.toArray()));
+
+                    SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFS_LOC, Context.MODE_PRIVATE);
+                    if(!preferences.contains("car")) {
+                        preferences.edit().putInt("car", defaultCid).apply();
+                    }
+                    activity.carID = preferences.getInt("car", defaultCid);
+
+                    activity.currentCar = Controller.getCurrentController().getCar(activity.carID);
+
+                    activity.efficiency.setText(String.format("%3.2f", activity.controller.entryC.getAverageEfficiency(activity.carID)));
+                    activity.distance.setText(String.format("%3.2f", activity.controller.entryC.getTotalDistance(activity.carID)));
+                    activity.cost.setText(String.format("%3.2f", activity.controller.entryC.getTotalCost(activity.carID)));
+                    activity.litres.setText(String.format("%3.2f", activity.controller.entryC.getTotalLitres(activity.carID)));
+                    activity.carName.setText(activity.currentCar.getName());
+                 }
+
+                return true;
+            }
+
+            @Override
+            protected void onPostExecute(Boolean carExists) {
+                activity.showProgress(false);
+                if(!carExists) {
+                    CreateCarDialogueBuilder.createCarDialogue(activity, activity, new ArrayList<Car>() {
+                    });
+                }
+            }
+        }.execute();
+
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        //TODO when a new car activity returns, recieve the carID, and make it the new default/current cid and
+        //update the averages etc to be this car
     }
 
     @Override
@@ -92,7 +176,13 @@ public class MainActivity extends AppCompatActivity {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId(); //id of the option selected
-
+        switch (id) {
+            case R.id.action_settings:
+                return true;
+            case R.id.action_add_car:
+                CreateCarDialogueBuilder.createCarDialogue(this, this, cars);
+                break;
+        }
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
             //if settings is clicked... do nothing
@@ -102,30 +192,130 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    /* called when the Send button is pressed*/
-//    @Override
-    public void sendMessage(View view) {
-        //action when send message buttion is pressed.
-        //activity created
-        Intent intent = new Intent(this, DisplayMessageActivity.class);
-        //creating message to be sent to next activity
-        EditText editText = (EditText) findViewById(R.id.editText);
-        String message = editText.getText().toString();
-        intent.putExtra(EXTRA_MESSAGE, message);
-        //starting activity with intent
-        startActivity(intent);
-    }
-
-    public void newEntry(View view) {
-        //action when entry button is pressed
-        Intent intent = new Intent(this, addEntry.class);
-        startActivity(intent);
-    }
-
     public void openHistory(View view) {
         //action when history button is pressed
         Intent intent = new Intent(this, EntryHistoryActivity.class);
+        intent.putExtra("carID", carID);
         startActivity(intent);
     }
 
+
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
+    private void showProgress(final boolean show) {
+        final View mProgressView = findViewById(R.id.progress);
+        final View content = findViewById(R.id.content);
+        // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
+        // for very easy animations. If available, use these APIs to fade-in
+        // the progress spinner.
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
+            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+
+//            content.setAlpha(0.5f);
+            content.setVisibility(show ? View.GONE : View.VISIBLE);
+
+            fab.setVisibility(show ? View.GONE : View.VISIBLE);
+
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            mProgressView.animate().setDuration(shortAnimTime).alpha(
+                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+                }
+            });
+        } else {
+            // The ViewPropertyAnimator APIs are not available, so simply show
+            // and hide the relevant UI components.
+            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            fab.setVisibility(show ? View.GONE : View.VISIBLE);
+            content.setVisibility(show ? View.GONE : View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void notifyChange(Object object, String type) {
+        switch (type) {
+            case DatabaseObserver.FUEL:
+                fuels.add((PetrolType) object);
+                break;
+            case DatabaseObserver.CAR:
+                Car car = (Car) object;
+                cars.add(car);
+                CarSetter setCar = new CarSetter(this, car);
+                setCar.execute();
+                break;
+            case DatabaseObserver.TAG:
+                tags.add((EntryTag) object);
+            case DatabaseObserver.ENTRY:
+                //TODO update details on the page
+        }
+    }
+
+    public void openCarChooser(View view) {
+        final MainActivity activity = this;
+
+        final Spinner carChoices = findViewById(R.id.car_chooser);
+        ArrayAdapter<Car> carArrayAdapter = (ArrayAdapter<Car>) carChoices.getAdapter();
+        carArrayAdapter.clear();
+        carArrayAdapter.addAll(cars);
+        carChoices.setVisibility(View.VISIBLE);
+        carChoices.performClick();
+
+        carChoices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                CarSetter carSetter = new CarSetter(activity, cars.get(i));
+                carSetter.execute();
+                Log.d("R", "onItemSelected: "+cars.get(i));
+
+                carChoices.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+                carChoices.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    public class CarSetter extends AsyncTask<Void, Void, Void> {
+        private MainActivity activity;
+        private Car car;
+        private double averageEfficiency;
+        private double totalDistance;
+        private double totalCost;
+        private double totalLitres;
+
+        public CarSetter(MainActivity activity, Car car) {
+            this.activity = activity;
+            this.car = car;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            averageEfficiency = activity.controller.entryC.getAverageEfficiency(car.getCid());
+            totalDistance = activity.controller.entryC.getTotalDistance(car.getCid());
+            totalCost = activity.controller.entryC.getTotalCost(car.getCid());
+            totalLitres = activity.controller.entryC.getTotalLitres(car.getCid());
+
+            SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFS_LOC, MODE_PRIVATE);
+            preferences.edit().putInt("car", car.getCid()).apply();
+
+            return null;
+        }
+
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            activity.currentCar = car;
+            activity.carName.setText(car.getName());
+            activity.carID = car.getCid();
+
+            activity.efficiency.setText(String.format("%3.2f", averageEfficiency));
+            activity.distance.setText(String.format("%3.2f", totalDistance));
+            activity.cost.setText(String.format("%3.2f", totalCost));
+            activity.litres.setText(String.format("%3.2f", totalLitres));
+            activity.carName.setText(car.getName());
+        }
+    }
 }

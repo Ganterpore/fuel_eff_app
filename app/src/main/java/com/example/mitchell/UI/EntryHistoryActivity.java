@@ -1,28 +1,45 @@
 package com.example.mitchell.UI;
 
+import android.app.Activity;
 import android.arch.persistence.room.Room;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.widget.TextView;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
-import application.Entry;
+import Controller.Controller;
+import Models.Entry;
+import Controller.EntryWrapper;
 import database.AppDatabase;
+import Controller.TripWrapper;
 
 /**
  * used to display a history of all entries that have been given
  */
 public class EntryHistoryActivity extends AppCompatActivity {
 
-    private ArrayAdapter<Entry> entryAdapter;
+    private EntryAdapter entryAdapter;
+    private TripAdapter tripAdapter;
+    private int carID;
+    private RecyclerView historyList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,31 +51,21 @@ public class EntryHistoryActivity extends AppCompatActivity {
         android.support.v7.app.ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        //building the list to be used to display history
-        entryAdapter = new ArrayAdapter<Entry>(this,
-                android.R.layout.simple_list_item_1);
-        ListView historyList = findViewById(R.id.History);
+        historyList = findViewById(R.id.history);
+        entryAdapter = new EntryAdapter(this);
+        tripAdapter = new TripAdapter(this);
         historyList.setAdapter(entryAdapter);
+//        historyList.setAdapter(tripAdapter);
+        historyList.setLayoutManager(new LinearLayoutManager(this));
 
-        //sets up the ability to select items from the list
-        historyList.setOnItemClickListener(
-            new AdapterView.OnItemClickListener() {
-                @Override
-                public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                    Entry entry = (Entry) parent.getItemAtPosition(position);
-                    Log.d("R", String.format("pos: %d, id: %d", position, id));
-                    Log.d("R", String.valueOf(entry.getEid()));
-                    openEntry(entry);
-//                    entryAdapter.notifyDataSetChanged();
-                }
-            }
-        );
+        carID = getIntent().getIntExtra("carID", 0);
+
+        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.type_switcher);
+        navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
+
 
         fillList();
-
-
     }
-
 
     @Override
     /**
@@ -70,6 +77,23 @@ public class EntryHistoryActivity extends AppCompatActivity {
         fillList();
     }
 
+    private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
+            = new BottomNavigationView.OnNavigationItemSelectedListener() {
+
+        @Override
+        public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+            switch (item.getItemId()) {
+                case R.id.navigation_entry:
+                    historyList.setAdapter(entryAdapter);
+                    return true;
+                case R.id.navigation_trip:
+                    historyList.setAdapter(tripAdapter);
+                    return true;
+            }
+            return false;
+        }
+    };
+
     /**
      * used to add all the entries to the list
      */
@@ -77,25 +101,27 @@ public class EntryHistoryActivity extends AppCompatActivity {
         final AppDatabase db = Room.databaseBuilder(getApplicationContext(),
                 AppDatabase.class, "database-name").build();
 
-        new AsyncTask<Void, Void, List<Entry>>() {
+        new AsyncTask<Void, Void, List<EntryWrapper>>() {
             @Override
             /**
              * gets all the entries which will be added to the list
              * TODO again, remove database access from UI
              */
-            protected List<Entry> doInBackground(Void... voids) {
-                Log.d("R", "updating list");
-                return db.entryDao().getAll();
+            protected List<EntryWrapper> doInBackground(Void... voids) {
+                return Controller.getCurrentController().entryC.getAllEntries(carID);
             }
             @Override
             /**
              * adds all entries to the adapter
              */
-            protected void onPostExecute(List<Entry> item) {
-                Log.d("R", "updating adapter");
+            protected void onPostExecute(List<EntryWrapper> entries) {
                 entryAdapter.clear();
-                entryAdapter.addAll(item);
+                entryAdapter.addAll(entries);
                 entryAdapter.notifyDataSetChanged();
+
+                tripAdapter.clear();
+                tripAdapter.addAll(entries);
+                tripAdapter.notifyDataSetChanged();
             }
         }.execute();
     }
@@ -104,11 +130,145 @@ public class EntryHistoryActivity extends AppCompatActivity {
      * used to handle the opening of a specific entry from the list
      * @param entry
      */
-    public void openEntry(Entry entry) {
+    public void openEntry(EntryWrapper entry) {
         Intent intent = new Intent(this, EntryActivity.class);
-        intent.putExtra(addEntry.ENTRY, entry);
+        intent.putExtra("eid", entry.getEid());
         Log.d("R", String.valueOf(entry.getEid()));
         startActivity(intent);
+    }
+
+    public void openTrip(int entry1, int entry2) {
+        Intent intent = new Intent(this, TripActivity.class);
+        intent.putExtra("entry1", entry1);
+        intent.putExtra("entry2", entry2);
+        startActivity(intent);
+    }
+
+    public class EntryAdapter extends RecyclerView.Adapter<EntryViewHolder> {
+        private Activity activity;
+        private List<EntryWrapper> entries;
+
+        public EntryAdapter(Activity activity) {
+            this.activity = activity;
+            entries = new ArrayList<>();
+        }
+
+        public void clear() {
+            entries.clear();
+        }
+
+        public void addAll(List<EntryWrapper> newEntries) {
+            this.entries.addAll(newEntries);
+        }
+
+        @Override
+        public EntryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(activity).inflate(R.layout.entry_list_item, parent, false);
+            EntryViewHolder entryVH = new EntryViewHolder(v);
+            return entryVH;
+        }
+
+        @Override
+        public void onBindViewHolder(EntryViewHolder holder, int position) {
+            holder.build(entries.get(position));
+        }
+
+        @Override
+        public int getItemCount() {
+            return entries.size();
+        }
+    }
+
+
+    public class EntryViewHolder extends RecyclerView.ViewHolder {
+        private View itemView;
+
+        public EntryViewHolder(View itemView) {
+            super(itemView);
+            this.itemView = itemView;
+        }
+
+        public void build(final EntryWrapper entry) {
+            TextView listDate = itemView.findViewById(R.id.listDate);
+            TextView listEfficiency = itemView.findViewById(R.id.listEfficiency);
+
+            listDate.setText(entry.getDateAsString());
+            listEfficiency.setText(String.valueOf(entry.getEfficiency()));
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openEntry(entry);
+                }
+            });
+        }
+    }
+
+    public class TripAdapter extends RecyclerView.Adapter<TripViewHolder> {
+        Activity activity;
+        List<EntryWrapper> entries;
+
+        public TripAdapter(Activity activity) {
+            this.activity = activity;
+            this.entries = new ArrayList<>();
+        }
+
+        public void clear() {
+            entries.clear();
+        }
+
+        public void addAll(List<EntryWrapper> newEntries) {
+            entries.addAll(newEntries);
+        }
+
+        @Override
+        public TripViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View v = LayoutInflater.from(activity).inflate(R.layout.trip_list_item, parent, false);
+            TripViewHolder tripVH = new TripViewHolder(v);
+            return tripVH;
+        }
+
+        @Override
+        public void onBindViewHolder(TripViewHolder holder, int position) {
+            EntryWrapper entry1 = entries.get(position);
+            EntryWrapper entry2 = entries.get(position+1);
+            holder.build(entry1, entry2);
+        }
+
+        @Override
+        public int getItemCount() {
+            return entries.size()-1;
+        }
+    }
+
+    public class TripViewHolder extends RecyclerView.ViewHolder {
+        private View itemView;
+        private TripWrapper trip;
+        private int entry1ID;
+        private int entry2ID;
+
+        public TripViewHolder(View itemView) {
+            super(itemView);
+            this.itemView = itemView;
+        }
+
+        public void build(EntryWrapper entry1, EntryWrapper entry2) {
+            entry1ID = entry1.getEid();
+            entry2ID = entry2.getEid();
+            trip = new TripWrapper(entry1, entry2);
+            TextView tripDate = itemView.findViewById(R.id.tripDate);
+            TextView tripLength = itemView.findViewById(R.id.trip_length);
+
+            tripDate.setText(trip.getStartDateAsString());
+            tripLength.setText(String.valueOf(trip.getTrip().getDistance()));
+
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    openTrip(entry1ID, entry2ID);
+                }
+            });
+        }
     }
 
 }

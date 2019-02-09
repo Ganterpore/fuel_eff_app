@@ -1,7 +1,6 @@
 package com.example.mitchell.UI;
 
 import android.arch.persistence.room.Room;
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -11,17 +10,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
-import application.Entry;
+import java.util.Arrays;
+
+import Controller.Controller;
+import Controller.EntryWrapper;
 import database.AppDatabase;
 
 /**
  * used to display entries to the user
  */
 public class EntryActivity extends AppCompatActivity {
-    public static final String PREVIOUS_ENTRY = "com.example.mitchell.test1.PREVIOUS_ENTRY";
+//    public static final String PREVIOUS_ENTRY = "com.example.mitchell.test1.PREVIOUS_ENTRY";
 
     //entry being displayed
-    private Entry entry;
+    private EntryWrapper entry;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,27 +35,47 @@ public class EntryActivity extends AppCompatActivity {
         android.support.v7.app.ActionBar ab = getSupportActionBar();
         ab.setDisplayHomeAsUpEnabled(true);
 
-        Intent intent = getIntent();
-        entry   = intent.getParcelableExtra(addEntry.ENTRY);
+        final TextView efficiency = findViewById(R.id.displayEfficiency);
+        final TextView litres = findViewById(R.id.displayLitresFilled);
+        final TextView distance = findViewById(R.id.displayDistanceTravelled);
+        final TextView cost = findViewById(R.id.displayCost);
+        final TextView cpkm = findViewById(R.id.displayCentsPerKilometre);
+        final TextView note = findViewById(R.id.display_note);
+        final TextView prevTags = findViewById(R.id.prev_tags);
+        final TextView nextTags = findViewById(R.id.next_tags);
 
-        Log.d("R", String.valueOf(entry.getEid()));
+        if(getIntent().hasExtra("eid")) {
+            final int eid = getIntent().getIntExtra("eid", 0);
+            new AsyncTask<Void, Void, EntryWrapper>() {
 
+                @Override
+                protected EntryWrapper doInBackground(Void... voids) {
+                    return Controller.getCurrentController().entryC.getEntry(eid);
+                }
+
+                @Override
+                protected void onPostExecute(EntryWrapper entryWrapper) {
+                    entry = entryWrapper;
+                    efficiency.setText(String.format("%3.2f L/100km", entry.getEfficiency()));
+                    litres.setText(String.format("Volume: %3.2fL",entry.getLitres()));
+                    distance.setText(String.format("Distance: %3.2fkm", entry.getTrip()));
+                    cost.setText(String.format("Cost: $%3.2f", entry.getCost()));
+                    cpkm.setText(String.format("cost/distance: %3.2fc/km", entry.getCPerKm()));
+                    note.setText(String.format("Note:\n"+ entry.getNote()));
+
+                    prevTags.setText("Prev trip:\n"+Arrays.toString(entry.getTags(false).toArray()));
+                    nextTags.setText("Next trip:\n"+Arrays.toString(entry.getTags(true).toArray()));
+                }
+            }.execute();
+        } else {
+            entry = null;
+        }
 
         //display the entry fields onto the screen
-        TextView efficiency = findViewById(R.id.displayEfficiency);
-        efficiency.setText(String.format("%3.2f L/100km", entry.getEfficiency()));
+        //TODO EntryWrapper should be given the type to convert to (Litres, gallons etc.) and convert
+        //TODO stop using default Locale
 
-        TextView litres = findViewById(R.id.displayLitresFilled);
-        litres.setText(String.format("Litres: %3.2fL",entry.getLitres()));
 
-        TextView distance = findViewById(R.id.displayDistanceTravelled);
-        distance.setText(String.format("Distance: %3.2fkm", entry.getTrip()));
-
-        TextView cost = findViewById(R.id.displayCost);
-        cost.setText(String.format("Cost: $%3.2f", entry.getCost()));
-
-        TextView cpkm = findViewById(R.id.displayCentsPerKilometre);
-        cpkm.setText(String.format("cents/km: %3.2fc/km", entry.getCPerKm()));
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -84,10 +106,10 @@ public class EntryActivity extends AppCompatActivity {
      * sends current entry to the create entry editor
      */
     private void editEntry() {
-        Intent intent = new Intent(this, addEntry.class);
-        intent.putExtra(PREVIOUS_ENTRY, entry);
-        startActivity(intent);
-        finish();
+//        Intent intent = new Intent(this, addEntry.class);
+//        intent.putExtra("eid", entry.getEid());
+//        startActivity(intent);
+//        finish();
     }
 
     /**

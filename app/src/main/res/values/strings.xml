@@ -23,6 +23,8 @@
     <string name="history">History</string>
     <string name="total_cost">Total cost:</string>
     <string name="total_litres">Total Litres:</string>
+    <string name="title_activity_add_car">addCarActivity</string>
+    <string name="enter_name">Enter Name</string>
 
 
 </resources>
