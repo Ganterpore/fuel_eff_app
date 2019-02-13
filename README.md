@@ -27,3 +27,12 @@ On the final page you can add any notes to this entry, this is just for your own
 
 ## Installation
 
+### Step 1
+Open Android studio, Select File -> New -> project from version control -> git, then fill in the url "https://github.com/Ganterpore/fuel_eff_app"
+
+### Step 2
+Run the app through android studio on your target app
+
+
+Its as simple as that!
+
