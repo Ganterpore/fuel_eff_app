@@ -104,7 +104,7 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
             @Override
             //when clicked a new entry will be created
             public void onClick(View view) {
-                NewEntryDialogueBuilder.newEntry(activity, activity, cars, fuels, tags);
+                NewEntryDialogueBuilder.newEntry(activity, activity, cars, fuels, tags, null);
             }
         });
     }

@@ -1,5 +1,6 @@
 package com.example.mitchell.UI;
 
+import android.app.Activity;
 import android.arch.persistence.room.Room;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -11,19 +12,26 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import java.util.Arrays;
+import java.util.List;
 
 import Controller.Controller;
 import Controller.EntryWrapper;
+import Models.Car;
+import Models.EntryTag;
+import Models.PetrolType;
 import database.AppDatabase;
 
 /**
  * used to display entries to the user
  */
-public class EntryActivity extends AppCompatActivity {
+public class EntryActivity extends AppCompatActivity implements DatabaseObserver {
 //    public static final String PREVIOUS_ENTRY = "com.example.mitchell.test1.PREVIOUS_ENTRY";
 
     //entry being displayed
     private EntryWrapper entry;
+    private List<Car> cars;
+    private List<PetrolType> fuels;
+    private List<EntryTag> tags;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,10 +54,14 @@ public class EntryActivity extends AppCompatActivity {
 
         if(getIntent().hasExtra("eid")) {
             final int eid = getIntent().getIntExtra("eid", 0);
+            final EntryActivity activity = this;
             new AsyncTask<Void, Void, EntryWrapper>() {
 
                 @Override
                 protected EntryWrapper doInBackground(Void... voids) {
+                    activity.fuels = Controller.getCurrentController().getAllFuels();
+                    activity.cars = Controller.getCurrentController().getAllCars();
+                    activity.tags = Controller.getCurrentController().getAllTags();
                     return Controller.getCurrentController().entryC.getEntry(eid);
                 }
 
@@ -106,6 +118,16 @@ public class EntryActivity extends AppCompatActivity {
      * sends current entry to the create entry editor
      */
     private void editEntry() {
+        NewEntryDialogueBuilder.newEntry(this, this, cars, fuels, tags, entry);
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                entry.deleteEntry();
+                return null;
+            }
+        }.execute();
+
 //        Intent intent = new Intent(this, addEntry.class);
 //        intent.putExtra("eid", entry.getEid());
 //        startActivity(intent);
@@ -136,4 +158,21 @@ public class EntryActivity extends AppCompatActivity {
         }.execute();
     }
 
+    @Override
+    public void notifyChange(Object object, String type) {
+        switch (type) {
+            case DatabaseObserver.FUEL:
+                fuels.add((PetrolType) object);
+                break;
+            case DatabaseObserver.CAR:
+                Car car = (Car) object;
+                cars.add(car);
+                break;
+            case DatabaseObserver.TAG:
+                tags.add((EntryTag) object);
+                break;
+            case DatabaseObserver.ENTRY:
+                //TODO update details on the page
+        }
+    }
 }

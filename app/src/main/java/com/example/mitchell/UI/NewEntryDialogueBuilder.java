@@ -3,6 +3,7 @@ package com.example.mitchell.UI;
 import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.support.annotation.RequiresApi;
@@ -44,11 +45,15 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
     private ArrayAdapter<PetrolType> fuelArrayAdapter;
     private TagAdapter prevTagAdapter;
     private TagAdapter nextTagAdapter;
+    private EntryWrapper prevEntry;
 
-    public static void newEntry(final DatabaseObserver observer, final MainActivity activity,
-                                final List<Car> cars, List<PetrolType> fuels, List<EntryTag> tags) {
+    public static void newEntry(final DatabaseObserver observer, final Activity activity,
+                                final List<Car> cars, List<PetrolType> fuels, List<EntryTag> tags,
+                                EntryWrapper prevEntry) {
         NewEntryDialogueBuilder.currentInstance = new NewEntryDialogueBuilder();
         currentInstance.observer = observer;
+
+        currentInstance.prevEntry = prevEntry;
 
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         View addEntryLayout = layoutInflater.inflate(R.layout.new_entry_dialogue_box, null);
@@ -61,6 +66,13 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         final Button addCarButton = addEntryLayout.findViewById(R.id.add_car_button);
         final Spinner fuelChoices = addEntryLayout.findViewById(R.id.fuel_used);
         final Button addFuelButton = addEntryLayout.findViewById(R.id.add_fuel_button);
+
+        if(prevEntry != null) {
+            dateET.setText(prevEntry.getDateAsString());
+            tripLengthET.setText(String.valueOf(prevEntry.getTrip()));
+            litresFilledET.setText(String.valueOf(prevEntry.getLitres()));
+            priceET.setText(String.valueOf(prevEntry.getPrice()));
+        }
 
         currentInstance.carArrayAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_dropdown_item);
         currentInstance.carArrayAdapter.addAll(cars);
@@ -110,7 +122,11 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(activity);
         addEntryAlert.setTitle("New Entry");
         addEntryAlert.setView(addEntryLayout);
-        addEntryAlert.setNegativeButton("Cancel", null);
+        if(prevEntry == null) {
+            addEntryAlert.setNegativeButton("Cancel", null);
+        } else {
+            addEntryAlert.setCancelable(false);
+        }
         addEntryAlert.setPositiveButton("Next", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
@@ -170,6 +186,11 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         RecyclerView.LayoutManager manager = new LinearLayoutManager(activity);
         allTags.setLayoutManager(manager);
 
+        //TODO fix this
+        if(currentInstance.prevEntry != null) {
+            currentInstance.prevTagAdapter.setCheckedTags(currentInstance.prevEntry.getTags(false));
+        }
+
 
         AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(activity);
         addEntryAlert.setTitle("Add tags for the previous trip");
@@ -215,6 +236,11 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         RecyclerView.LayoutManager manager = new LinearLayoutManager(activity);
         allTags.setLayoutManager(manager);
 
+        //TODO fix this
+        if(currentInstance.prevEntry != null) {
+            currentInstance.nextTagAdapter.setCheckedTags(currentInstance.prevEntry.getTags(true));
+        }
+
 
         AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(activity);
         addEntryAlert.setTitle("Add tags for the next trip");
@@ -246,6 +272,9 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         View addEntryLayout = layoutInflater.inflate(R.layout.add_notes_to_entry, null);
 
         final EditText noteET = addEntryLayout.findViewById(R.id.entry_note);
+        if(currentInstance.prevEntry != null) {
+            noteET.setText(currentInstance.prevEntry.getNote());
+        }
 
         AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(activity);
         addEntryAlert.setTitle("Add a note to the entry");
@@ -330,6 +359,16 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         @Override
         public int getItemCount() {
             return tags.size();
+        }
+
+        public void setCheckedTags(List<EntryTag> checkedTags) {
+            for(EntryTag checkedTag : checkedTags) {
+                for(TagViewHolder tagViewHolder : tagViewHolders) {
+                    if(checkedTag.equals(tagViewHolder.tag)) {
+                        ((CheckBox) tagViewHolder.itemView.findViewById(R.id.check_box)).setChecked(true);
+                    }
+                }
+            }
         }
 
         public List<EntryTag> getCheckedTags() {

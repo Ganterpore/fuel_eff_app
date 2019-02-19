@@ -105,7 +105,6 @@ public class EntryHistoryActivity extends AppCompatActivity {
             @Override
             /**
              * gets all the entries which will be added to the list
-             * TODO again, remove database access from UI
              */
             protected List<EntryWrapper> doInBackground(Void... voids) {
                 return Controller.getCurrentController().entryC.getAllEntries(carID);

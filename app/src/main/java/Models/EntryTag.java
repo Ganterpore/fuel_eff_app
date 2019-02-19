@@ -41,4 +41,16 @@ public class EntryTag {
     public String toString() {
         return name;
     }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof EntryTag)) {
+            return false;
+        }
+        EntryTag otherTag = (EntryTag) obj;
+        if(otherTag.tid==this.tid) {
+            return true;
+        }
+        return false;
+    }
 }
