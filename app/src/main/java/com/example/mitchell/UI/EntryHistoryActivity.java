@@ -49,7 +49,7 @@ public class EntryHistoryActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         android.support.v7.app.ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
+//        ab.setDisplayHomeAsUpEnabled(true);
 
         historyList = findViewById(R.id.history);
         entryAdapter = new EntryAdapter(this);

@@ -25,7 +25,7 @@ import Models.TagsOnEntry;
  */
 @Dao
 public interface EntryDao {
-    @Query("SELECT * FROM entry WHERE car = :cid")
+    @Query("SELECT * FROM entry WHERE car = :cid ORDER BY date")
     List<Entry> getAllEntries(int cid);
 
     @Query("SELECT * FROM entry")
@@ -48,6 +48,9 @@ public interface EntryDao {
 
     @Delete
     void deleteEntry(Entry entry);
+
+    @Delete
+    void deleteCar(Car car);
 
     @Delete
     void deleteAll(Entry... entries);

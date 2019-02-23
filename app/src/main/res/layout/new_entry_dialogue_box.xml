@@ -28,7 +28,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter trip length..."
-        android:inputType="number"/>
+        android:inputType="numberDecimal"/>
 
     <EditText
         android:id="@+id/fill_up_litres"

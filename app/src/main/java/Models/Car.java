@@ -41,6 +41,15 @@ public class Car {
         return cid+"/"+name+"/"+licensePlate+"/"+model+"/"+make;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof Car)) {
+            return false;
+        }
+        Car carObj = (Car) obj;
+        return carObj.cid==this.cid;
+    }
+
     public String getModel() {
         return model;
     }

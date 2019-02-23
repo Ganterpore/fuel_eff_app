@@ -182,11 +182,17 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
             case R.id.action_add_car:
                 CreateCarDialogueBuilder.createCarDialogue(this, this, cars);
                 break;
-        }
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            //if settings is clicked... do nothing
-            return true;
+            case  R.id.action_delete_car:
+                new AsyncTask<Void, Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        Controller.getCurrentController().deleteCar(currentCar);
+                        return null;
+                    }
+                }.execute();
+                cars.remove(currentCar);
+                new CarSetter(this, cars.get(0)).execute();
         }
 
         return super.onOptionsItemSelected(item);
