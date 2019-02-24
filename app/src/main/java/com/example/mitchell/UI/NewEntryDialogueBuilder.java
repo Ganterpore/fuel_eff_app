@@ -49,7 +49,7 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
 
     public static void newEntry(final DatabaseObserver observer, final Activity activity,
                                 final List<Car> cars, List<PetrolType> fuels, List<EntryTag> tags,
-                                EntryWrapper prevEntry) {
+                                EntryWrapper prevEntry, final Car currentCar) {
         NewEntryDialogueBuilder.currentInstance = new NewEntryDialogueBuilder();
         currentInstance.observer = observer;
 
@@ -77,6 +77,9 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         currentInstance.carArrayAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_spinner_dropdown_item);
         currentInstance.carArrayAdapter.addAll(cars);
         carChoices.setAdapter(currentInstance.carArrayAdapter);
+
+        int carIndex = currentInstance.carArrayAdapter.getPosition(currentCar);
+        carChoices.setSelection(carIndex);
 
         addCarButton.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -38,7 +38,7 @@ public class Car {
 
     @Override
     public String toString() {
-        return cid+"/"+name+"/"+licensePlate+"/"+model+"/"+make;
+        return name;
     }
 
     @Override

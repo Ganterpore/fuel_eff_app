@@ -17,6 +17,7 @@ import java.util.List;
 import Controller.Controller;
 import Controller.EntryWrapper;
 import Models.Car;
+import Models.Entry;
 import Models.EntryTag;
 import Models.PetrolType;
 import database.AppDatabase;
@@ -32,6 +33,7 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
     private List<Car> cars;
     private List<PetrolType> fuels;
     private List<EntryTag> tags;
+    private Car currentCar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,10 +61,13 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
 
                 @Override
                 protected EntryWrapper doInBackground(Void... voids) {
+                    EntryWrapper entry = Controller.getCurrentController().entryC.getEntry(eid);
+
                     activity.fuels = Controller.getCurrentController().getAllFuels();
                     activity.cars = Controller.getCurrentController().getAllCars();
                     activity.tags = Controller.getCurrentController().getAllTags();
-                    return Controller.getCurrentController().entryC.getEntry(eid);
+                    activity.currentCar = Controller.getCurrentController().getCar(entry.getCar());
+                    return entry;
                 }
 
                 @Override
@@ -118,7 +123,7 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
      * sends current entry to the create entry editor
      */
     private void editEntry() {
-        NewEntryDialogueBuilder.newEntry(this, this, cars, fuels, tags, entry);
+        NewEntryDialogueBuilder.newEntry(this, this, cars, fuels, tags, entry, currentCar);
         new AsyncTask<Void, Void, Void>() {
 
             @Override

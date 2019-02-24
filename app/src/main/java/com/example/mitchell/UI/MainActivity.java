@@ -67,8 +67,8 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
     private TextView distance;
     private TextView cost;
     private TextView litres;
-    private TextView carName;
     private FloatingActionButton fab;
+    private Spinner carChoices;
 
     /**
      * automatically called when activity created.
@@ -80,10 +80,10 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
         setContentView(R.layout.activity_main); //name of view
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        final MainActivity activity = this;
 
         controller = new Controller(getApplicationContext());
 
-        carName = findViewById(R.id.car_name);
 
         efficiency = findViewById(R.id.AverageEfficiency);
         distance = findViewById(R.id.TotalDistance);
@@ -91,20 +91,39 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
         litres = findViewById(R.id.TotalLitres);
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
-        final Spinner carChoices = findViewById(R.id.car_chooser);
+        carChoices = findViewById(R.id.car_chooser);
         ArrayAdapter<Car> carArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item);
         carChoices.setAdapter(carArrayAdapter);
+
+        int carIndex = carArrayAdapter.getPosition(currentCar);
+        carChoices.setSelection(carIndex);
+
+        carChoices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                CarSetter carSetter = new CarSetter(activity, cars.get(i));
+                carSetter.execute();
+                Log.d("R", "onItemSelected: "+cars.get(i));
+
+//                carChoices.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+//                carChoices.setVisibility(View.GONE);
+            }
+
+        });
 
         showProgress(true);
         updateDetails(this);
 
         //creating the add entry button
-        final MainActivity activity = this;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             //when clicked a new entry will be created
             public void onClick(View view) {
-                NewEntryDialogueBuilder.newEntry(activity, activity, cars, fuels, tags, null);
+                NewEntryDialogueBuilder.newEntry(activity, activity, cars, fuels, tags, null, currentCar);
             }
         });
     }
@@ -137,7 +156,12 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
                     activity.distance.setText(String.format("%3.2f", activity.controller.entryC.getTotalDistance(activity.carID)));
                     activity.cost.setText(String.format("%3.2f", activity.controller.entryC.getTotalCost(activity.carID)));
                     activity.litres.setText(String.format("%3.2f", activity.controller.entryC.getTotalLitres(activity.carID)));
-                    activity.carName.setText(activity.currentCar.getName());
+
+                    ArrayAdapter<Car> carArrayAdapter = (ArrayAdapter<Car>) activity.carChoices.getAdapter();
+                    carArrayAdapter.clear();
+                    carArrayAdapter.addAll(activity.cars);
+                    int carIndex = carArrayAdapter.getPosition(activity.currentCar);
+                    activity.carChoices.setSelection(carIndex);
                  }
 
                 return true;
@@ -257,33 +281,6 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
         }
     }
 
-    public void openCarChooser(View view) {
-        final MainActivity activity = this;
-
-        final Spinner carChoices = findViewById(R.id.car_chooser);
-        ArrayAdapter<Car> carArrayAdapter = (ArrayAdapter<Car>) carChoices.getAdapter();
-        carArrayAdapter.clear();
-        carArrayAdapter.addAll(cars);
-        carChoices.setVisibility(View.VISIBLE);
-        carChoices.performClick();
-
-        carChoices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                CarSetter carSetter = new CarSetter(activity, cars.get(i));
-                carSetter.execute();
-                Log.d("R", "onItemSelected: "+cars.get(i));
-
-                carChoices.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                carChoices.setVisibility(View.GONE);
-            }
-        });
-    }
-
     public class CarSetter extends AsyncTask<Void, Void, Void> {
         private MainActivity activity;
         private Car car;
@@ -314,14 +311,12 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
         @Override
         protected void onPostExecute(Void aVoid) {
             activity.currentCar = car;
-            activity.carName.setText(car.getName());
             activity.carID = car.getCid();
 
             activity.efficiency.setText(String.format("%3.2f", averageEfficiency));
             activity.distance.setText(String.format("%3.2f", totalDistance));
             activity.cost.setText(String.format("%3.2f", totalCost));
             activity.litres.setText(String.format("%3.2f", totalLitres));
-            activity.carName.setText(car.getName());
         }
     }
 }
