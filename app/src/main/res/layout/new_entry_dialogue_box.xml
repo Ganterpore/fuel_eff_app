@@ -7,42 +7,57 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <!--TODO make errors show up red
-        TODO automatically select next box when enter hit-->
+    <!--TODO make errors show up red-->
 
-    <TextView
-        android:id="@+id/title_text"
+    <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Entry details" />
+        android:layout_height="wrap_content">
 
     <EditText
         android:id="@+id/entry_date"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter Date dd/mm/yyyy"
-        android:inputType="date" />
+        android:inputType="date"
+        android:imeOptions="actionNext"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <EditText
         android:id="@+id/trip_length"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter trip length..."
-        android:inputType="numberDecimal"/>
+        android:hint="Enter trip length:"
+        android:inputType="numberDecimal"
+        android:imeOptions="actionNext"/>
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
 
     <EditText
         android:id="@+id/fill_up_litres"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Add litres filled..."
-        android:inputType="numberDecimal"/>
+        android:hint="Add litres filled:"
+        android:inputType="numberDecimal"
+        android:imeOptions="actionNext"/>
+    </android.support.design.widget.TextInputLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <EditText
         android:id="@+id/entry_price"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter cost..."
-        android:inputType="numberDecimal"/>
+        android:hint="Enter cost:"
+        android:inputType="numberDecimal" />
+    </android.support.design.widget.TextInputLayout>
 
     <android.support.constraint.ConstraintLayout
         android:layout_width="match_parent"

@@ -6,39 +6,52 @@
     android:layout_height="wrap_content"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/title_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="Car Details" />
 
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <EditText
         android:id="@+id/car_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter Car Name..."
-        android:inputType="textCapWords" />
+        android:inputType="textCapWords"
+        android:imeOptions="actionNext"/>
+    </android.support.design.widget.TextInputLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <EditText
         android:id="@+id/license_plate"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter license Plate..."
-        android:inputType="textCapCharacters"/>
+        android:inputType="textCapCharacters"
+        android:imeOptions="actionNext"/>
+    </android.support.design.widget.TextInputLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <EditText
         android:id="@+id/make"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter make..."
-        android:inputType="textCapWords"/>
+        android:inputType="textCapWords"
+        android:imeOptions="actionNext"/>
+    </android.support.design.widget.TextInputLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <EditText
         android:id="@+id/model"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="Enter model..."
         android:inputType="textCapWords"/>
-
+    </android.support.design.widget.TextInputLayout>
 
 </LinearLayout>

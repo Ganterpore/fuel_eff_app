@@ -2,6 +2,7 @@ package com.example.mitchell.UI;
 
 import android.app.Activity;
 import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -45,36 +46,32 @@ public class EntryHistoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entry_history);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        android.support.v7.app.ActionBar ab = getSupportActionBar();
-//        ab.setDisplayHomeAsUpEnabled(true);
 
         historyList = findViewById(R.id.history);
         entryAdapter = new EntryAdapter(this);
         tripAdapter = new TripAdapter(this);
         historyList.setAdapter(entryAdapter);
-//        historyList.setAdapter(tripAdapter);
         historyList.setLayoutManager(new LinearLayoutManager(this));
 
         carID = getIntent().getIntExtra("carID", 0);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.type_switcher);
+        BottomNavigationView navigation = findViewById(R.id.type_switcher);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
 
-        fillList();
+        fillList(entryAdapter, tripAdapter, carID, getApplicationContext());
     }
 
     @Override
-    /**
-     * means that whenever the page is reoppenned the list will be rebuilt.
+    /*
+     * means that whenever the page is reopened the list will be rebuilt.
      * This allows edits to flow back in.
      */
     public void onResume() {
         super.onResume();
-        fillList();
+        fillList(entryAdapter, tripAdapter, carID, getApplicationContext());
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -97,8 +94,9 @@ public class EntryHistoryActivity extends AppCompatActivity {
     /**
      * used to add all the entries to the list
      */
-    private void fillList() {
-        final AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+    private static void fillList(final EntryAdapter entryAdapter, final TripAdapter tripAdapter,
+                                 final int carID, Context context) {
+        final AppDatabase db = Room.databaseBuilder(context,
                 AppDatabase.class, "database-name").build();
 
         new AsyncTask<Void, Void, List<EntryWrapper>>() {

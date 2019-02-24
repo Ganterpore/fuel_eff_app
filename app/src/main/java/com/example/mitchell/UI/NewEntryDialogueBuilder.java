@@ -282,7 +282,6 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         AlertDialog.Builder addEntryAlert = new AlertDialog.Builder(activity);
         addEntryAlert.setTitle("Add a note to the entry");
         addEntryAlert.setView(addEntryLayout);
-//        addEntryAlert.setNegativeButton("Cancel", null);
         addEntryAlert.setPositiveButton("Create", new DialogInterface.OnClickListener() {
 
             @Override

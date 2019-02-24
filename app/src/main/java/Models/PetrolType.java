@@ -20,7 +20,7 @@ public class PetrolType {
 
     @Override
     public String toString() {
-        return pid+"/"+name+"/"+percent;
+        return name+" - "+percent+"%";
     }
 
     public int getPid() {

@@ -4,18 +4,27 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <EditText
         android:id="@+id/fuel_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:hint="Enter name..."
-        android:inputType="textCapWords"/>
+        android:hint="Enter name:"
+        android:inputType="textCapWords"
+        android:imeOptions="actionNext"/>
+    </android.support.design.widget.TextInputLayout>
 
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
     <EditText
         android:id="@+id/fuel_percent"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:inputType="number"
-        android:hint="Enter fuel percent..."/>
+        android:hint="Enter fuel percent:"/>
+    </android.support.design.widget.TextInputLayout>
 
 </LinearLayout>
