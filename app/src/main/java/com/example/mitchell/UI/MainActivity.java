@@ -276,8 +276,11 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
                 break;
             case DatabaseObserver.TAG:
                 tags.add((EntryTag) object);
+                break;
             case DatabaseObserver.ENTRY:
-                //TODO update details on the page
+                CarSetter updateDetails = new CarSetter(this, currentCar);
+                updateDetails.execute();
+                break;
         }
     }
 

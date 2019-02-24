@@ -34,6 +34,14 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
     private List<PetrolType> fuels;
     private List<EntryTag> tags;
     private Car currentCar;
+    private TextView efficiency;
+    private TextView litres;
+    private TextView distance;
+    private TextView cost;
+    private TextView cpkm;
+    private TextView note;
+    private TextView prevTags;
+    private TextView nextTags;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,48 +50,19 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        android.support.v7.app.ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
-
-        final TextView efficiency = findViewById(R.id.displayEfficiency);
-        final TextView litres = findViewById(R.id.displayLitresFilled);
-        final TextView distance = findViewById(R.id.displayDistanceTravelled);
-        final TextView cost = findViewById(R.id.displayCost);
-        final TextView cpkm = findViewById(R.id.displayCentsPerKilometre);
-        final TextView note = findViewById(R.id.display_note);
-        final TextView prevTags = findViewById(R.id.prev_tags);
-        final TextView nextTags = findViewById(R.id.next_tags);
+        efficiency = findViewById(R.id.displayEfficiency);
+        litres = findViewById(R.id.displayLitresFilled);
+        distance = findViewById(R.id.displayDistanceTravelled);
+        cost = findViewById(R.id.displayCost);
+        cpkm = findViewById(R.id.displayCentsPerKilometre);
+        note = findViewById(R.id.display_note);
+        prevTags = findViewById(R.id.prev_tags);
+        nextTags = findViewById(R.id.next_tags);
 
         if(getIntent().hasExtra("eid")) {
             final int eid = getIntent().getIntExtra("eid", 0);
-            final EntryActivity activity = this;
-            new AsyncTask<Void, Void, EntryWrapper>() {
-
-                @Override
-                protected EntryWrapper doInBackground(Void... voids) {
-                    EntryWrapper entry = Controller.getCurrentController().entryC.getEntry(eid);
-
-                    activity.fuels = Controller.getCurrentController().getAllFuels();
-                    activity.cars = Controller.getCurrentController().getAllCars();
-                    activity.tags = Controller.getCurrentController().getAllTags();
-                    activity.currentCar = Controller.getCurrentController().getCar(entry.getCar());
-                    return entry;
-                }
-
-                @Override
-                protected void onPostExecute(EntryWrapper entryWrapper) {
-                    entry = entryWrapper;
-                    efficiency.setText(String.format("%3.2f L/100km", entry.getEfficiency()));
-                    litres.setText(String.format("Volume: %3.2fL",entry.getLitres()));
-                    distance.setText(String.format("Distance: %3.2fkm", entry.getTrip()));
-                    cost.setText(String.format("Cost: $%3.2f", entry.getCost()));
-                    cpkm.setText(String.format("cost/distance: %3.2fc/km", entry.getCPerKm()));
-                    note.setText(String.format("Note:\n"+ entry.getNote()));
-
-                    prevTags.setText("Prev trip:\n"+Arrays.toString(entry.getTags(false).toArray()));
-                    nextTags.setText("Next trip:\n"+Arrays.toString(entry.getTags(true).toArray()));
-                }
-            }.execute();
+//            final EntryActivity activity = this;
+            new Updater(this, eid).execute();
         } else {
             entry = null;
         }
@@ -93,6 +72,42 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
         //TODO stop using default Locale
 
 
+    }
+
+    private class Updater extends AsyncTask<Void, Void, EntryWrapper> {
+
+        EntryActivity activity;
+        int eid;
+
+        public Updater(EntryActivity activity, int eid) {
+            this.activity = activity;
+            this.eid = eid;
+        }
+
+        @Override
+        protected EntryWrapper doInBackground(Void... voids) {
+            EntryWrapper entry = Controller.getCurrentController().entryC.getEntry(eid);
+
+            activity.fuels = Controller.getCurrentController().getAllFuels();
+            activity.cars = Controller.getCurrentController().getAllCars();
+            activity.tags = Controller.getCurrentController().getAllTags();
+            activity.currentCar = Controller.getCurrentController().getCar(entry.getCar());
+            return entry;
+        }
+
+        @Override
+        protected void onPostExecute(EntryWrapper entryWrapper) {
+            entry = entryWrapper;
+            efficiency.setText(String.format("%3.2f L/100km", entry.getEfficiency()));
+            litres.setText(String.format("Volume: %3.2fL",entry.getLitres()));
+            distance.setText(String.format("Distance: %3.2fkm", entry.getTrip()));
+            cost.setText(String.format("Cost: $%3.2f", entry.getCost()));
+            cpkm.setText(String.format("cost/distance: %3.2fc/km", entry.getCPerKm()));
+            note.setText(String.format("Note:\n"+ entry.getNote()));
+
+            prevTags.setText("Prev trip:\n"+Arrays.toString(entry.getTags(false).toArray()));
+            nextTags.setText("Next trip:\n"+Arrays.toString(entry.getTags(true).toArray()));
+        }
     }
 
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -177,7 +192,8 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
                 tags.add((EntryTag) object);
                 break;
             case DatabaseObserver.ENTRY:
-                //TODO update details on the page
+                entry = (EntryWrapper) object;
+                new Updater(this, entry.getEid()).execute();
         }
     }
 }

@@ -162,6 +162,7 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
                     @Override
                     protected void onPostExecute(EntryWrapper entry) {
                         addPrevTripTagsToEntry(entry, observer, activity);
+                        observer.notifyChange(entry, DatabaseObserver.ENTRY );
                     }
                 }.execute();
 
@@ -213,6 +214,11 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
 
                         return null;
                     }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        observer.notifyChange(entry, DatabaseObserver.ENTRY );
+                    }
                 }.execute();
 
                 addNextTripTagsToEntry(entry, observer, activity);
@@ -262,6 +268,11 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
                         entry.addTags(true, checkedTags);
                         return null;
                     }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        observer.notifyChange(entry, DatabaseObserver.ENTRY );
+                    }
                 }.execute();
                 Log.d("R", "onClick: notes dialogue being created");
                 addNotesToEntry(entry, observer, activity);
@@ -292,6 +303,11 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
                     protected Void doInBackground(Void... voids) {
                         entry.addNote(noteET.getText().toString());
                         return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        observer.notifyChange(entry, DatabaseObserver.ENTRY );
                     }
                 }.execute();
 
