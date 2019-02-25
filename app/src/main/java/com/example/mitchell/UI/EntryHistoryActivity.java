@@ -17,17 +17,13 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import Controller.Controller;
-import Models.Entry;
 import Controller.EntryWrapper;
 import database.AppDatabase;
 import Controller.TripWrapper;
@@ -178,6 +174,7 @@ public class EntryHistoryActivity extends AppCompatActivity {
 
 
     public class EntryViewHolder extends RecyclerView.ViewHolder {
+        private DecimalFormat decimalFormat = new DecimalFormat("#.00");
         private View itemView;
 
         public EntryViewHolder(View itemView) {
@@ -188,9 +185,11 @@ public class EntryHistoryActivity extends AppCompatActivity {
         public void build(final EntryWrapper entry) {
             TextView listDate = itemView.findViewById(R.id.listDate);
             TextView listEfficiency = itemView.findViewById(R.id.listEfficiency);
+            TextView listNote = itemView.findViewById(R.id.list_note);
 
             listDate.setText(entry.getDateAsString());
-            listEfficiency.setText(String.valueOf(entry.getEfficiency()));
+            listEfficiency.setText(decimalFormat.format(entry.getEfficiency()));
+            listNote.setText(entry.getNote());
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -239,6 +238,7 @@ public class EntryHistoryActivity extends AppCompatActivity {
     }
 
     public class TripViewHolder extends RecyclerView.ViewHolder {
+        private DecimalFormat decimalFormat = new DecimalFormat("#.00");
         private View itemView;
         private TripWrapper trip;
         private int entry1ID;
@@ -255,9 +255,11 @@ public class EntryHistoryActivity extends AppCompatActivity {
             trip = new TripWrapper(entry1, entry2);
             TextView tripDate = itemView.findViewById(R.id.tripDate);
             TextView tripLength = itemView.findViewById(R.id.trip_length);
+            TextView tripDays = itemView.findViewById(R.id.trip_days);
 
             tripDate.setText(trip.getStartDateAsString());
-            tripLength.setText(String.valueOf(trip.getTrip().getDistance()));
+            tripDays.setText(String.valueOf(trip.getTrip().getDays()));
+            tripLength.setText(decimalFormat.format(trip.getTrip().getDistance()));
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

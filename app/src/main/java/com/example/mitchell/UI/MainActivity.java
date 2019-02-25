@@ -180,14 +180,6 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        //TODO when a new car activity returns, recieve the carID, and make it the new default/current cid and
-        //update the averages etc to be this car
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);

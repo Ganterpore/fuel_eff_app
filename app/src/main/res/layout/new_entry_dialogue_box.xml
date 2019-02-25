@@ -109,12 +109,5 @@
 
     </android.support.constraint.ConstraintLayout>
 
-    <!--<EditText-->
-        <!--android:id="@+id/fuel_used"-->
-        <!--android:layout_width="match_parent"-->
-        <!--android:layout_height="wrap_content"-->
-        <!--android:hint="Enter fuel type used..."/>-->
-    <!--TODO update to dropdown menu, with add button-->
-
 
 </LinearLayout>

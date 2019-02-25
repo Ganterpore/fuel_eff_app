@@ -1,5 +1,7 @@
 package Models;
 
+import android.util.Log;
+
 import java.util.concurrent.TimeUnit;
 
 public class Trip {
@@ -23,12 +25,7 @@ public class Trip {
 
     //finds the days between two given dates
     private int getDaysBetween(long startDate, long finishDate) {
-//        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd");
-//        float days;
-//        long diff = startDate.getTime() - finishDate.getTime();
-//        days = TimeUnit.DAYS.convert(diff, TimeUnit.MILLISECONDS);
-//        return (int) days;
-
+        Log.d("a", "getDaysBetween: getting days, = "+(int) TimeUnit.DAYS.convert(finishDate-startDate, TimeUnit.MILLISECONDS));
         return (int) TimeUnit.DAYS.convert(finishDate-startDate, TimeUnit.MILLISECONDS);
     }
 
