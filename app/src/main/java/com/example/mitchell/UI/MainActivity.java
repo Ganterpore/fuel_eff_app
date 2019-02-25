@@ -3,6 +3,7 @@ package com.example.mitchell.UI;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -199,16 +200,34 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
                 CreateCarDialogueBuilder.createCarDialogue(this, this, cars);
                 break;
             case  R.id.action_delete_car:
-                new AsyncTask<Void, Void, Void>() {
+                final MainActivity activity = this;
 
+                AlertDialog.Builder deleteCarDialogue = new AlertDialog.Builder(this);
+                deleteCarDialogue.setTitle("Are you sure?");
+                deleteCarDialogue.setMessage("Would you really like to delete the car \""+currentCar.getName()+"\"?");
+                deleteCarDialogue.setNegativeButton("Cancel", null);
+                deleteCarDialogue.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
                     @Override
-                    protected Void doInBackground(Void... voids) {
-                        Controller.getCurrentController().deleteCar(currentCar);
-                        return null;
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        showProgress(true);
+                        new AsyncTask<Void, Void, Void>() {
+
+                            @Override
+                            protected Void doInBackground(Void... voids) {
+                                Controller.getCurrentController().deleteCar(currentCar);
+                                return null;
+                            }
+
+                            @Override
+                            protected void onPostExecute(Void aVoid) {
+                                cars.remove(currentCar);
+                                new CarSetter(activity, cars.get(0)).execute();
+                                showProgress(false);
+                            }
+                        }.execute();
                     }
-                }.execute();
-                cars.remove(currentCar);
-                new CarSetter(this, cars.get(0)).execute();
+                });
+                deleteCarDialogue.create().show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -296,6 +315,8 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
             totalCost = activity.controller.entryC.getTotalCost(car.getCid());
             totalLitres = activity.controller.entryC.getTotalLitres(car.getCid());
 
+
+
             SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFS_LOC, MODE_PRIVATE);
             preferences.edit().putInt("car", car.getCid()).apply();
 
@@ -312,6 +333,12 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
             activity.distance.setText(String.format("%3.2f", totalDistance));
             activity.cost.setText(String.format("%3.2f", totalCost));
             activity.litres.setText(String.format("%3.2f", totalLitres));
+
+            ArrayAdapter<Car> carArrayAdapter = (ArrayAdapter<Car>) activity.carChoices.getAdapter();
+            carArrayAdapter.clear();
+            carArrayAdapter.addAll(activity.cars);
+            int carIndex = carArrayAdapter.getPosition(activity.currentCar);
+            activity.carChoices.setSelection(carIndex);
         }
     }
 }
