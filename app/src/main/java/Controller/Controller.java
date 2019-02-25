@@ -88,6 +88,10 @@ public class Controller {
         return db.entryDao().getFuel(pid);
     }
 
+    public void deleteCar(Car car) {
+        db.entryDao().deleteCar(car);
+    }
+
 //    public List<TripWrapper> getAllTrips(int cid) {
 //        List<Integer> entries = db.entryDao().getOrderedEid(cid);
 //        List<TripWrapper> trips = new ArrayList<>();

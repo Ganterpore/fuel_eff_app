@@ -2,6 +2,7 @@ package com.example.mitchell.UI;
 
 import android.app.Activity;
 import android.arch.persistence.room.Room;
+import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -16,17 +17,13 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import Controller.Controller;
-import Models.Entry;
 import Controller.EntryWrapper;
 import database.AppDatabase;
 import Controller.TripWrapper;
@@ -45,36 +42,32 @@ public class EntryHistoryActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entry_history);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        android.support.v7.app.ActionBar ab = getSupportActionBar();
-        ab.setDisplayHomeAsUpEnabled(true);
 
         historyList = findViewById(R.id.history);
         entryAdapter = new EntryAdapter(this);
         tripAdapter = new TripAdapter(this);
         historyList.setAdapter(entryAdapter);
-//        historyList.setAdapter(tripAdapter);
         historyList.setLayoutManager(new LinearLayoutManager(this));
 
         carID = getIntent().getIntExtra("carID", 0);
 
-        BottomNavigationView navigation = (BottomNavigationView) findViewById(R.id.type_switcher);
+        BottomNavigationView navigation = findViewById(R.id.type_switcher);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
 
-        fillList();
+        fillList(entryAdapter, tripAdapter, carID, getApplicationContext());
     }
 
     @Override
-    /**
-     * means that whenever the page is reoppenned the list will be rebuilt.
+    /*
+     * means that whenever the page is reopened the list will be rebuilt.
      * This allows edits to flow back in.
      */
     public void onResume() {
         super.onResume();
-        fillList();
+        fillList(entryAdapter, tripAdapter, carID, getApplicationContext());
     }
 
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
@@ -97,15 +90,15 @@ public class EntryHistoryActivity extends AppCompatActivity {
     /**
      * used to add all the entries to the list
      */
-    private void fillList() {
-        final AppDatabase db = Room.databaseBuilder(getApplicationContext(),
+    private static void fillList(final EntryAdapter entryAdapter, final TripAdapter tripAdapter,
+                                 final int carID, Context context) {
+        final AppDatabase db = Room.databaseBuilder(context,
                 AppDatabase.class, "database-name").build();
 
         new AsyncTask<Void, Void, List<EntryWrapper>>() {
             @Override
             /**
              * gets all the entries which will be added to the list
-             * TODO again, remove database access from UI
              */
             protected List<EntryWrapper> doInBackground(Void... voids) {
                 return Controller.getCurrentController().entryC.getAllEntries(carID);
@@ -181,6 +174,7 @@ public class EntryHistoryActivity extends AppCompatActivity {
 
 
     public class EntryViewHolder extends RecyclerView.ViewHolder {
+        private DecimalFormat decimalFormat = new DecimalFormat("#.00");
         private View itemView;
 
         public EntryViewHolder(View itemView) {
@@ -191,9 +185,11 @@ public class EntryHistoryActivity extends AppCompatActivity {
         public void build(final EntryWrapper entry) {
             TextView listDate = itemView.findViewById(R.id.listDate);
             TextView listEfficiency = itemView.findViewById(R.id.listEfficiency);
+            TextView listNote = itemView.findViewById(R.id.list_note);
 
             listDate.setText(entry.getDateAsString());
-            listEfficiency.setText(String.valueOf(entry.getEfficiency()));
+            listEfficiency.setText(decimalFormat.format(entry.getEfficiency()));
+            listNote.setText(entry.getNote());
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -242,6 +238,7 @@ public class EntryHistoryActivity extends AppCompatActivity {
     }
 
     public class TripViewHolder extends RecyclerView.ViewHolder {
+        private DecimalFormat decimalFormat = new DecimalFormat("#.00");
         private View itemView;
         private TripWrapper trip;
         private int entry1ID;
@@ -258,9 +255,11 @@ public class EntryHistoryActivity extends AppCompatActivity {
             trip = new TripWrapper(entry1, entry2);
             TextView tripDate = itemView.findViewById(R.id.tripDate);
             TextView tripLength = itemView.findViewById(R.id.trip_length);
+            TextView tripDays = itemView.findViewById(R.id.trip_days);
 
             tripDate.setText(trip.getStartDateAsString());
-            tripLength.setText(String.valueOf(trip.getTrip().getDistance()));
+            tripDays.setText(String.valueOf(trip.getTrip().getDays()));
+            tripLength.setText(decimalFormat.format(trip.getTrip().getDistance()));
 
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override

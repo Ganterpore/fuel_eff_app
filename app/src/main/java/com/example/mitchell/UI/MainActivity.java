@@ -3,6 +3,7 @@ package com.example.mitchell.UI;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.annotation.TargetApi;
+import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -67,8 +68,8 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
     private TextView distance;
     private TextView cost;
     private TextView litres;
-    private TextView carName;
     private FloatingActionButton fab;
+    private Spinner carChoices;
 
     /**
      * automatically called when activity created.
@@ -80,10 +81,10 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
         setContentView(R.layout.activity_main); //name of view
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        final MainActivity activity = this;
 
         controller = new Controller(getApplicationContext());
 
-        carName = findViewById(R.id.car_name);
 
         efficiency = findViewById(R.id.AverageEfficiency);
         distance = findViewById(R.id.TotalDistance);
@@ -91,20 +92,39 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
         litres = findViewById(R.id.TotalLitres);
         fab = (FloatingActionButton) findViewById(R.id.fab);
 
-        final Spinner carChoices = findViewById(R.id.car_chooser);
+        carChoices = findViewById(R.id.car_chooser);
         ArrayAdapter<Car> carArrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_dropdown_item);
         carChoices.setAdapter(carArrayAdapter);
+
+        int carIndex = carArrayAdapter.getPosition(currentCar);
+        carChoices.setSelection(carIndex);
+
+        carChoices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                CarSetter carSetter = new CarSetter(activity, cars.get(i));
+                carSetter.execute();
+                Log.d("R", "onItemSelected: "+cars.get(i));
+
+//                carChoices.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+//                carChoices.setVisibility(View.GONE);
+            }
+
+        });
 
         showProgress(true);
         updateDetails(this);
 
         //creating the add entry button
-        final MainActivity activity = this;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             //when clicked a new entry will be created
             public void onClick(View view) {
-                NewEntryDialogueBuilder.newEntry(activity, activity, cars, fuels, tags);
+                NewEntryDialogueBuilder.newEntry(activity, activity, cars, fuels, tags, null, currentCar);
             }
         });
     }
@@ -137,7 +157,12 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
                     activity.distance.setText(String.format("%3.2f", activity.controller.entryC.getTotalDistance(activity.carID)));
                     activity.cost.setText(String.format("%3.2f", activity.controller.entryC.getTotalCost(activity.carID)));
                     activity.litres.setText(String.format("%3.2f", activity.controller.entryC.getTotalLitres(activity.carID)));
-                    activity.carName.setText(activity.currentCar.getName());
+
+                    ArrayAdapter<Car> carArrayAdapter = (ArrayAdapter<Car>) activity.carChoices.getAdapter();
+                    carArrayAdapter.clear();
+                    carArrayAdapter.addAll(activity.cars);
+                    int carIndex = carArrayAdapter.getPosition(activity.currentCar);
+                    activity.carChoices.setSelection(carIndex);
                  }
 
                 return true;
@@ -153,14 +178,6 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
             }
         }.execute();
 
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        //TODO when a new car activity returns, recieve the carID, and make it the new default/current cid and
-        //update the averages etc to be this car
     }
 
     @Override
@@ -182,11 +199,35 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
             case R.id.action_add_car:
                 CreateCarDialogueBuilder.createCarDialogue(this, this, cars);
                 break;
-        }
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            //if settings is clicked... do nothing
-            return true;
+            case  R.id.action_delete_car:
+                final MainActivity activity = this;
+
+                AlertDialog.Builder deleteCarDialogue = new AlertDialog.Builder(this);
+                deleteCarDialogue.setTitle("Are you sure?");
+                deleteCarDialogue.setMessage("Would you really like to delete the car \""+currentCar.getName()+"\"?");
+                deleteCarDialogue.setNegativeButton("Cancel", null);
+                deleteCarDialogue.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        showProgress(true);
+                        new AsyncTask<Void, Void, Void>() {
+
+                            @Override
+                            protected Void doInBackground(Void... voids) {
+                                Controller.getCurrentController().deleteCar(currentCar);
+                                return null;
+                            }
+
+                            @Override
+                            protected void onPostExecute(Void aVoid) {
+                                cars.remove(currentCar);
+                                new CarSetter(activity, cars.get(0)).execute();
+                                showProgress(false);
+                            }
+                        }.execute();
+                    }
+                });
+                deleteCarDialogue.create().show();
         }
 
         return super.onOptionsItemSelected(item);
@@ -246,36 +287,12 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
                 break;
             case DatabaseObserver.TAG:
                 tags.add((EntryTag) object);
+                break;
             case DatabaseObserver.ENTRY:
-                //TODO update details on the page
+                CarSetter updateDetails = new CarSetter(this, currentCar);
+                updateDetails.execute();
+                break;
         }
-    }
-
-    public void openCarChooser(View view) {
-        final MainActivity activity = this;
-
-        final Spinner carChoices = findViewById(R.id.car_chooser);
-        ArrayAdapter<Car> carArrayAdapter = (ArrayAdapter<Car>) carChoices.getAdapter();
-        carArrayAdapter.clear();
-        carArrayAdapter.addAll(cars);
-        carChoices.setVisibility(View.VISIBLE);
-        carChoices.performClick();
-
-        carChoices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                CarSetter carSetter = new CarSetter(activity, cars.get(i));
-                carSetter.execute();
-                Log.d("R", "onItemSelected: "+cars.get(i));
-
-                carChoices.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-                carChoices.setVisibility(View.GONE);
-            }
-        });
     }
 
     public class CarSetter extends AsyncTask<Void, Void, Void> {
@@ -298,6 +315,8 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
             totalCost = activity.controller.entryC.getTotalCost(car.getCid());
             totalLitres = activity.controller.entryC.getTotalLitres(car.getCid());
 
+
+
             SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFS_LOC, MODE_PRIVATE);
             preferences.edit().putInt("car", car.getCid()).apply();
 
@@ -308,14 +327,18 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
         @Override
         protected void onPostExecute(Void aVoid) {
             activity.currentCar = car;
-            activity.carName.setText(car.getName());
             activity.carID = car.getCid();
 
             activity.efficiency.setText(String.format("%3.2f", averageEfficiency));
             activity.distance.setText(String.format("%3.2f", totalDistance));
             activity.cost.setText(String.format("%3.2f", totalCost));
             activity.litres.setText(String.format("%3.2f", totalLitres));
-            activity.carName.setText(car.getName());
+
+            ArrayAdapter<Car> carArrayAdapter = (ArrayAdapter<Car>) activity.carChoices.getAdapter();
+            carArrayAdapter.clear();
+            carArrayAdapter.addAll(activity.cars);
+            int carIndex = carArrayAdapter.getPosition(activity.currentCar);
+            activity.carChoices.setSelection(carIndex);
         }
     }
 }

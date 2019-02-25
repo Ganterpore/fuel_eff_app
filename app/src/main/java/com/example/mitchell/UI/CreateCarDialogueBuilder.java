@@ -19,7 +19,7 @@ import static java.lang.System.exit;
 
 public class CreateCarDialogueBuilder {
 
-    public static void createCarDialogue(final DatabaseObserver observer, final MainActivity activity, List<Car> cars) {
+    public static void createCarDialogue(final DatabaseObserver observer, final Activity activity, List<Car> cars) {
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         View addCarLayout = layoutInflater.inflate(R.layout.new_car_dialogue_box, null);
         final EditText carNameET = addCarLayout.findViewById(R.id.car_name);
@@ -48,7 +48,7 @@ public class CreateCarDialogueBuilder {
         addCarAlert.create().show();
     }
 
-    private static void addCarToDatabaseAndUpdate(final MainActivity activity, final String carName,
+    private static void addCarToDatabaseAndUpdate(final Activity activity, final String carName,
                                                   final String licensePlate, final String make, final String model,
                                                   final DatabaseObserver observer) {
         new AsyncTask<Void, Void, String>() {

@@ -13,6 +13,7 @@ import Models.EntryTag;
 import Models.Note;
 import Models.TagsOnEntry;
 import database.AppDatabase;
+import database.EntryDao;
 
 public class EntryWrapper {
     Entry entry;
@@ -92,6 +93,10 @@ public class EntryWrapper {
 
     public String getDateAsString() {
         return new SimpleDateFormat("dd/MM/yyyy").format(new Date(getDate()));
+    }
+
+    public void deleteEntry() {
+        db.entryDao().deleteEntry(entry);
     }
 
     public int getEid() {

@@ -38,7 +38,16 @@ public class Car {
 
     @Override
     public String toString() {
-        return cid+"/"+name+"/"+licensePlate+"/"+model+"/"+make;
+        return name;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(!(obj instanceof Car)) {
+            return false;
+        }
+        Car carObj = (Car) obj;
+        return carObj.cid==this.cid;
     }
 
     public String getModel() {

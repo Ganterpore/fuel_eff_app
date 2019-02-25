@@ -6,11 +6,15 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.TextView;
 
-import Controller.Controller;
+import java.text.DecimalFormat;
+import java.util.Arrays;
+
 import Controller.TripWrapper;
 import database.AppDatabase;
 
 public class TripActivity extends AppCompatActivity {
+
+    private final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.00");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,6 +26,7 @@ public class TripActivity extends AppCompatActivity {
         final TextView tripEff = findViewById(R.id.trip_efficiency);
         final TextView tripDays = findViewById(R.id.trip_days);
         final TextView tripLitres = findViewById(R.id.trip_litres);
+        final TextView tripTags = findViewById(R.id.trip_tags);
 
         if(getIntent().hasExtra("entry1")
                 && getIntent().hasExtra("entry2")) {
@@ -38,11 +43,12 @@ public class TripActivity extends AppCompatActivity {
 
                 @Override
                 protected void onPostExecute(TripWrapper tripWrapper) {
-                    startDate.setText("Trip start: "+tripWrapper.getStartDateAsString());
-                    tripLength.setText("Trip Length (distance): "+tripWrapper.getTrip().getDistance());
-                    tripEff.setText("Trip Efficiency: "+tripWrapper.getTrip().getEfficiency());
-                    tripDays.setText("Trip length (days): "+tripWrapper.getTrip().getDays());
-                    tripLitres.setText("Fuel used: "+tripWrapper.getTrip().getLitres());
+                    startDate.setText(tripWrapper.getStartDateAsString());
+                    tripLength.setText(DECIMAL_FORMAT.format(tripWrapper.getTrip().getDistance()));
+                    tripEff.setText(DECIMAL_FORMAT.format(tripWrapper.getTrip().getEfficiency()));
+                    tripDays.setText(String.valueOf(tripWrapper.getTrip().getDays()));
+                    tripLitres.setText(DECIMAL_FORMAT.format(tripWrapper.getTrip().getLitres()));
+                    tripTags.setText(Arrays.toString(tripWrapper.getTags().toArray()));
                 }
             }.execute();
         }
