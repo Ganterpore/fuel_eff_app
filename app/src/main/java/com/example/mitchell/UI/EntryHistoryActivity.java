@@ -101,7 +101,7 @@ public class EntryHistoryActivity extends AppCompatActivity {
              * gets all the entries which will be added to the list
              */
             protected List<EntryWrapper> doInBackground(Void... voids) {
-                return Controller.getCurrentController().entryC.getAllEntries(carID);
+                return Controller.getCurrentController().entryC.getAllEntriesOnCar(carID);
             }
             @Override
             /**
