@@ -6,6 +6,9 @@ import android.arch.persistence.room.ForeignKey;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
+/**
+ * Class which assosciates Tags to Entry's
+ */
 @Entity(primaryKeys = {"eid", "tid", "nextTrip"},
         foreignKeys = {
                 @ForeignKey(entity = Entry.class,
@@ -23,6 +26,12 @@ public class TagsOnEntry {
     @ColumnInfo
     private boolean nextTrip;
 
+    /**
+     * Creator for the TagsOnEntrry class
+     * @param eid, the Entry ID to assosciate to
+     * @param tid, the Tag ID to assosciate from
+     * @param nextTrip, whether the tags are for the next or previous trip.
+     */
     public TagsOnEntry(int eid, int tid, boolean nextTrip) {
         this.eid = eid;
         this.tid = tid;

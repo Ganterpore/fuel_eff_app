@@ -4,6 +4,9 @@ import android.util.Log;
 
 import java.util.concurrent.TimeUnit;
 
+/**
+ * Class for trips between refuels
+ */
 public class Trip {
     private double distance;
     private double efficiency;
@@ -13,6 +16,11 @@ public class Trip {
     private int fuel;
     private long startDate;
 
+    /**
+     * Creator for the Trip class
+     * @param start, the Entry to start the trip
+     * @param finish, the Entry which finishes the trip
+     */
     public Trip(Entry start, Entry finish) {
         distance = finish.getTrip();
         efficiency = finish.getEfficiency();
@@ -23,7 +31,9 @@ public class Trip {
         startDate = start.getDate();
     }
 
-    //finds the days between two given dates
+    /**
+     * finds the days between two given dates, used to find the trip length.
+     */
     private int getDaysBetween(long startDate, long finishDate) {
         Log.d("a", "getDaysBetween: getting days, = "+(int) TimeUnit.DAYS.convert(finishDate-startDate, TimeUnit.MILLISECONDS));
         return (int) TimeUnit.DAYS.convert(finishDate-startDate, TimeUnit.MILLISECONDS);

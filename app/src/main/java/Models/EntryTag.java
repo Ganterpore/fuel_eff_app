@@ -9,6 +9,9 @@ import android.os.Parcelable;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
+/**
+ * Class for a Tag which can be placmd on entries
+ */
 @Entity
 public class EntryTag {
     @PrimaryKey(autoGenerate = true)
@@ -17,6 +20,10 @@ public class EntryTag {
     @ColumnInfo
     private String name;
 
+    /**
+     * Creator for an EntryTag
+      * @param name, the name of the tag
+     */
     public EntryTag(String name) {
         this.name = name;
     }

@@ -4,6 +4,9 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
+/**
+ * Class for a fuel type which can be used to fill up the car.
+ */
 @Entity
 public class PetrolType {
     @PrimaryKey(autoGenerate = true)
@@ -13,6 +16,11 @@ public class PetrolType {
     @ColumnInfo
     private int percent;
 
+    /**
+     * Creator for the PetrolType class
+     * @param name, the name for the fuel
+     * @param percent, the percentage of the fuel
+     */
     public PetrolType(String name, int percent) {
         this.name = name;
         this.percent = percent;

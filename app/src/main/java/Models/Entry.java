@@ -11,7 +11,7 @@ import static android.arch.persistence.room.ForeignKey.SET_NULL;
 
 /**
  * Created by Mitchell on 8/02/2018.
- * class describes the refill entries when a ar is filled up
+ * class describes the refill entries when a car is filled up
  */
 
 @Entity(foreignKeys = {@ForeignKey(
@@ -27,15 +27,6 @@ import static android.arch.persistence.room.ForeignKey.SET_NULL;
         )}
 )
 public class Entry {
-    public int getEid() {
-        return eid;
-    }
-
-    public void setEid(int eid) {
-        Log.d("R", String.format("setEid: %d", eid));
-        this.eid = eid;
-    }
-
     @PrimaryKey(autoGenerate = true)
     private int eid;
 
@@ -56,6 +47,15 @@ public class Entry {
     public Entry() {
     }
 
+    /**
+     * Creator for the Entry object
+     * @param date, the date the entry was made
+     * @param trip, the length of the last trip on the entry
+     * @param litres, litres filled in this entry
+     * @param price, the price of the fuel at the time
+     * @param car, which car was used
+     * @param fuel, which fuel was used
+     */
     public Entry(long date, double trip, double litres, double price, int car, int fuel) {
         this.date = date;
         this.trip = trip;
@@ -77,6 +77,16 @@ public class Entry {
     public void setDate(long date) {
         this.date = date;
     }
+
+    public int getEid() {
+        return eid;
+    }
+
+    public void setEid(int eid) {
+        Log.d("R", String.format("setEid: %d", eid));
+        this.eid = eid;
+    }
+
 
     public double getTrip() {
         return trip;
@@ -123,12 +133,4 @@ public class Entry {
     public void setFuel(int fuel) {
         this.fuel = fuel;
     }
-//        public List<EntryTag> getTags() {
-//        //if tags not in memory, get from database
-//
-//        if(tags==null) {
-//            tags = Controller.db.entryDao().getTagsOnEntry(this.eid);
-//        }
-//    }
-
 }
