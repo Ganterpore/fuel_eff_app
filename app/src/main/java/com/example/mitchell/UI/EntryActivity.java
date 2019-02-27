@@ -21,11 +21,9 @@ import Models.PetrolType;
 import database.AppDatabase;
 
 /**
- * used to display entries to the user
+ * Activity for displaying a single Entry to the user
  */
 public class EntryActivity extends AppCompatActivity implements DatabaseObserver {
-//    public static final String PREVIOUS_ENTRY = "com.example.mitchell.test1.PREVIOUS_ENTRY";
-
     //entry being displayed
     private EntryWrapper entry;
     private List<Car> cars;
@@ -59,7 +57,6 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
 
         if(getIntent().hasExtra("eid")) {
             final int eid = getIntent().getIntExtra("eid", 0);
-//            final EntryActivity activity = this;
             new Updater(this, eid).execute();
         } else {
             entry = null;
@@ -68,10 +65,11 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
         //display the entry fields onto the screen
         //TODO EntryWrapper should be given the type to convert to (Litres, gallons etc.) and convert
         //TODO stop using default Locale
-
-
     }
 
+    /**
+     * Used for updating all the fields on teh screen with information from the database
+     */
     private class Updater extends AsyncTask<Void, Void, EntryWrapper> {
 
         EntryActivity activity;
@@ -108,6 +106,7 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
         }
     }
 
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_entry_activity, menu);
@@ -145,11 +144,6 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
                 return null;
             }
         }.execute();
-
-//        Intent intent = new Intent(this, addEntry.class);
-//        intent.putExtra("eid", entry.getEid());
-//        startActivity(intent);
-//        finish();
     }
 
     /**
@@ -163,10 +157,7 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                Log.d("R", String.format("deleting entry: %d", entry.getEid()));
-                Log.d("R", String.valueOf(db.entryDao().countEntries()));
                 db.entryDao().deleteEntryFromID(entry.getEid());
-                Log.d("R", String.valueOf(db.entryDao().countEntries()));
                 return null;
             }
             @Override

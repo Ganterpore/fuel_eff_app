@@ -19,7 +19,12 @@ import static java.lang.System.exit;
 
 public class CreateCarDialogueBuilder {
 
-    public static void createCarDialogue(final DatabaseObserver observer, final Activity activity, List<Car> cars) {
+    /**
+     * Used to create a Diaologue box for the creation of a car instance in the database
+     * @param observer, the observer to nmotify when the instance has been made
+     * @param activity, the activity from which to originate the dialougue from
+     */
+    public static void createCarDialogue(final DatabaseObserver observer, final Activity activity) {
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         View addCarLayout = layoutInflater.inflate(R.layout.new_car_dialogue_box, null);
         final EditText carNameET = addCarLayout.findViewById(R.id.car_name);
@@ -48,6 +53,9 @@ public class CreateCarDialogueBuilder {
         addCarAlert.create().show();
     }
 
+    /**
+     * Class for placing the car into the database
+     */
     private static void addCarToDatabaseAndUpdate(final Activity activity, final String carName,
                                                   final String licensePlate, final String make, final String model,
                                                   final DatabaseObserver observer) {

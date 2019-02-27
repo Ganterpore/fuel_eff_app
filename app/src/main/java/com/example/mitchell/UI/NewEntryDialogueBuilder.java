@@ -47,6 +47,16 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
     private TagAdapter nextTagAdapter;
     private EntryWrapper prevEntry;
 
+    /**
+     * Used to create a Dialogue box to aid the user in the creation of a new Entry
+     * @param observer, the observer to notify when a change has been made
+     * @param activity, the activity from which to start the dialogue box from
+     * @param cars, the cars from which to select from
+     * @param fuels, the fuels in which to select from
+     * @param tags, the tags in which to select from
+     * @param prevEntry, optional previous entry that has been used. This is for editing purposes, and can be left blank if a new entry
+     * @param currentCar, the currently selected car by the user.
+     */
     public static void newEntry(final DatabaseObserver observer, final Activity activity,
                                 final List<Car> cars, List<PetrolType> fuels, List<EntryTag> tags,
                                 EntryWrapper prevEntry, final Car currentCar) {
@@ -84,7 +94,7 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         addCarButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                CreateCarDialogueBuilder.createCarDialogue(currentInstance, activity, cars);
+                CreateCarDialogueBuilder.createCarDialogue(currentInstance, activity);
             }
         });
 
@@ -172,6 +182,12 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         addEntryAlert.create().show();
     }
 
+    /**
+     * Creates a dialogue box for adding tags for the previous trip
+     * @param entry, the entry to add the tags to
+     * @param observer, the observer to notify of changes
+     * @param activity, the activity to open the dialogue box in
+     */
     private static void addPrevTripTagsToEntry(final EntryWrapper entry, final DatabaseObserver observer, final Activity activity) {
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         View addEntryLayout = layoutInflater.inflate(R.layout.add_prev_tags_to_entry, null);
@@ -227,6 +243,12 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         addEntryAlert.create().show();
     }
 
+    /**
+     * Creates a dialogue box for adding tags for the next trip
+     * @param entry, the entry to add the tags to
+     * @param observer, the observer to notify of changes
+     * @param activity, the activity to open the dialogue box in
+     */
     private static void addNextTripTagsToEntry(final EntryWrapper entry, final DatabaseObserver observer, final Activity activity) {
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         View addEntryLayout = layoutInflater.inflate(R.layout.add_next_tags_to_entry, null);
@@ -281,6 +303,12 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         addEntryAlert.create().show();
     }
 
+    /**
+     * Creates a dialogue box for adding a note to the entry
+     * @param entry, the entry to add the note to
+     * @param observer, the observer to notify of changes
+     * @param activity, the activity to open the dialogue box in
+     */
     private static void addNotesToEntry(final EntryWrapper entry, final DatabaseObserver observer, final Activity activity) {
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         View addEntryLayout = layoutInflater.inflate(R.layout.add_notes_to_entry, null);
@@ -316,6 +344,9 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
         addEntryAlert.create().show();
     }
 
+    /**
+     * The RecyclerView ViewHolder for tags
+     */
     public static class TagViewHolder extends RecyclerView.ViewHolder {
         View itemView;
         EntryTag tag;
@@ -326,18 +357,29 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
             this.setIsRecyclable(false);
         }
 
+        /**
+         * Builds the view based on the tag given
+         * @param tag, the tag to build around
+         */
         public void build(EntryTag tag) {
             this.tag = tag;
             TextView tagName = itemView.findViewById(R.id.list_tag_name);
             tagName.setText(tag.getName());
         }
 
+        /**
+         * Used to inform whether the current view is set as checked or not
+         * @return whether the check box is checked
+         */
         public boolean isChecked() {
             CheckBox checkBox = itemView.findViewById(R.id.check_box);
             return checkBox.isChecked();
         }
     }
 
+    /**
+     * The RecyclerView Adapter for tags
+     */
     public static class TagAdapter extends RecyclerView.Adapter<TagViewHolder> {
         private ArrayList<EntryTag> tags;
         private Activity activity;
@@ -350,11 +392,19 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
             this.addAll(tags);
         }
 
+        /**
+         * Add a list of tags to the tag options on the adapter
+         * @param newTags, the tags to add
+         */
         public void addAll(List<EntryTag> newTags) {
             tags.addAll(newTags);
             Log.d("F", "addAll: tags added");
         }
 
+        /**
+         * Add a tag to the adapter
+         * @param tag, the tag to add
+         */
         public void addTag(EntryTag tag) {
             tags.add(tag);
         }
@@ -379,7 +429,12 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
             return tags.size();
         }
 
+        /**
+         * Sets all the given tags to checked on the list
+         * @param checkedTags, the tags to check
+         */
         public void setCheckedTags(List<EntryTag> checkedTags) {
+            //TODO fix
             for(EntryTag checkedTag : checkedTags) {
                 for(TagViewHolder tagViewHolder : tagViewHolders) {
                     if(checkedTag.equals(tagViewHolder.tag)) {
@@ -389,6 +444,10 @@ public class NewEntryDialogueBuilder implements DatabaseObserver {
             }
         }
 
+        /**
+         * Gets all the tags which have been selected on the adapter
+         * @return the checked tags
+         */
         public List<EntryTag> getCheckedTags() {
             ArrayList<EntryTag> checkedTags = new ArrayList<>();
             for(TagViewHolder tagViewHolder : tagViewHolders) {

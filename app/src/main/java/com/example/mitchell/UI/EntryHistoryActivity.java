@@ -61,15 +61,18 @@ public class EntryHistoryActivity extends AppCompatActivity {
     }
 
     @Override
-    /*
-     * means that whenever the page is reopened the list will be rebuilt.
-     * This allows edits to flow back in.
-     */
     public void onResume() {
         super.onResume();
+        /*
+         * means that whenever the page is reopened the list will be rebuilt.
+         * This allows edits to flow back in.
+         */
         fillList(entryAdapter, tripAdapter, carID, getApplicationContext());
     }
 
+    /**
+     * Used to update the page view when different options are selected on the bottom navigation view
+     */
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
 
@@ -88,7 +91,7 @@ public class EntryHistoryActivity extends AppCompatActivity {
     };
 
     /**
-     * used to add all the entries to the list
+     * used to populate entries to the RecyclerView on the page.
      */
     private static void fillList(final EntryAdapter entryAdapter, final TripAdapter tripAdapter,
                                  final int carID, Context context) {
@@ -97,16 +100,11 @@ public class EntryHistoryActivity extends AppCompatActivity {
 
         new AsyncTask<Void, Void, List<EntryWrapper>>() {
             @Override
-            /**
-             * gets all the entries which will be added to the list
-             */
             protected List<EntryWrapper> doInBackground(Void... voids) {
                 return Controller.getCurrentController().entryC.getAllEntriesOnCar(carID);
             }
+
             @Override
-            /**
-             * adds all entries to the adapter
-             */
             protected void onPostExecute(List<EntryWrapper> entries) {
                 entryAdapter.clear();
                 entryAdapter.addAll(entries);
@@ -121,7 +119,7 @@ public class EntryHistoryActivity extends AppCompatActivity {
 
     /**
      * used to handle the opening of a specific entry from the list
-     * @param entry
+     * @param entry, the entry you wish to open
      */
     public void openEntry(EntryWrapper entry) {
         Intent intent = new Intent(this, EntryActivity.class);
@@ -130,6 +128,11 @@ public class EntryHistoryActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * used to handle the opening of a specific trip from the list.
+     * @param entry1, the first trip assosciated with the entry
+     * @param entry2, the second trip assosciated with the entry
+     */
     public void openTrip(int entry1, int entry2) {
         Intent intent = new Intent(this, TripActivity.class);
         intent.putExtra("entry1", entry1);
@@ -137,6 +140,9 @@ public class EntryHistoryActivity extends AppCompatActivity {
         startActivity(intent);
     }
 
+    /**
+     * The RecyclerView Adapter for handling Entry's
+     */
     public class EntryAdapter extends RecyclerView.Adapter<EntryViewHolder> {
         private Activity activity;
         private List<EntryWrapper> entries;
@@ -173,6 +179,9 @@ public class EntryHistoryActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * The RecyclerView ViewHolder for handling Entry's
+     */
     public class EntryViewHolder extends RecyclerView.ViewHolder {
         private DecimalFormat decimalFormat = new DecimalFormat("#.00");
         private View itemView;
@@ -200,6 +209,9 @@ public class EntryHistoryActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * The RecyclerView Adapter for handling Trips
+     */
     public class TripAdapter extends RecyclerView.Adapter<TripViewHolder> {
         Activity activity;
         List<EntryWrapper> entries;
@@ -237,6 +249,9 @@ public class EntryHistoryActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * The RecyclerView ViewHolder for handling Trips
+     */
     public class TripViewHolder extends RecyclerView.ViewHolder {
         private DecimalFormat decimalFormat = new DecimalFormat("#.00");
         private View itemView;

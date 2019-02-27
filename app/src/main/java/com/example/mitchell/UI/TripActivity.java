@@ -12,8 +12,10 @@ import java.util.Arrays;
 import Controller.TripWrapper;
 import database.AppDatabase;
 
+/**
+ * Activity used for displaying a Trip to the user
+ */
 public class TripActivity extends AppCompatActivity {
-
     private final DecimalFormat DECIMAL_FORMAT = new DecimalFormat("#.00");
 
     @Override

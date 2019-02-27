@@ -54,7 +54,7 @@ import Controller.EntryWrapper;
 import static java.lang.System.exit;
 
 /**
- * initial class created on startup
+ * initial Activity created on startup. Holds the main menu
  */
 public class MainActivity extends AppCompatActivity implements DatabaseObserver {
     public static final String SHARED_PREFS_LOC = "com.ganterpore.fuel_eff";
@@ -71,10 +71,6 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
     private FloatingActionButton fab;
     private Spinner carChoices;
 
-    /**
-     * automatically called when activity created.
-     * @param savedInstanceState
-     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,16 +100,12 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 CarSetter carSetter = new CarSetter(activity, cars.get(i));
                 carSetter.execute();
-                Log.d("R", "onItemSelected: "+cars.get(i));
-
-//                carChoices.setVisibility(View.GONE);
             }
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-//                carChoices.setVisibility(View.GONE);
+                return;
             }
-
         });
 
         showProgress(true);
@@ -129,6 +121,11 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
         });
     }
 
+    /**
+     * Used to update the basic details on the main pagge of the app, including getting all the current information
+     * from the database on first startup.
+     * @param activity, the MainActivity to update
+     */
     private static void updateDetails(final MainActivity activity) {
         new AsyncTask<Void, Void, Boolean>() {
 
@@ -139,7 +136,6 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
                 activity.cars = Controller.getCurrentController().getAllCars();
                 activity.tags = Controller.getCurrentController().getAllTags();
                 if(activity.cars.size()==0) { //if there are currently no cars, we must create one
-//                    activity.createCarDialogue();
                     return false;
                 } else {
                     int defaultCid = activity.cars.get(0).getCid();
@@ -172,8 +168,7 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
             protected void onPostExecute(Boolean carExists) {
                 activity.showProgress(false);
                 if(!carExists) {
-                    CreateCarDialogueBuilder.createCarDialogue(activity, activity, new ArrayList<Car>() {
-                    });
+                    CreateCarDialogueBuilder.createCarDialogue(activity, activity);
                 }
             }
         }.execute();
@@ -189,15 +184,12 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId(); //id of the option selected
         switch (id) {
             case R.id.action_settings:
                 return true;
             case R.id.action_add_car:
-                CreateCarDialogueBuilder.createCarDialogue(this, this, cars);
+                CreateCarDialogueBuilder.createCarDialogue(this, this);
                 break;
             case  R.id.action_delete_car:
                 final MainActivity activity = this;
@@ -233,14 +225,20 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * opens the activity for the historical data of the app
+     * @param view, the view from which this action was selected
+     */
     public void openHistory(View view) {
-        //action when history button is pressed
         Intent intent = new Intent(this, EntryHistoryActivity.class);
         intent.putExtra("carID", carID);
         startActivity(intent);
     }
 
-
+    /**
+     * Used to show/hide the progress spinner when information is loading.
+     * @param show, whhether to show or hide.
+     */
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
         final View mProgressView = findViewById(R.id.progress);
@@ -273,6 +271,11 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
         }
     }
 
+    /**
+     * Used to update the page when innformation on the database is changed
+     * @param object, the object which ahs been added to the database
+     * @param type, the type of the object. Types are contained in the DatabaseObserver interface
+     */
     @Override
     public void notifyChange(Object object, String type) {
         switch (type) {
@@ -295,6 +298,10 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
         }
     }
 
+    /**
+     * Used to update the current car being used, and to update all the information on the page assosciated
+     * with that car
+     */
     public class CarSetter extends AsyncTask<Void, Void, Void> {
         private MainActivity activity;
         private Car car;

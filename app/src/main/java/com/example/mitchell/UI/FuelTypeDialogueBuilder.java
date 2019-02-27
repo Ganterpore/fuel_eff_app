@@ -13,6 +13,11 @@ import Models.PetrolType;
 
 public class FuelTypeDialogueBuilder {
 
+    /**
+     * Class used to create a dialogue box for the creation of a fuel type
+     * @param observer, the observer who needs to be notified if/when a fuel is added to the database
+     * @param activity, the activity from which to open the dialogue.
+     */
     public static void createFuelTypeDialogue(final DatabaseObserver observer, Activity activity) {
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
         View addFuelLayout  =   layoutInflater.inflate(R.layout.new_fuel_dialogue_box, null);
