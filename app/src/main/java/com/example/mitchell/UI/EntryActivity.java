@@ -1,6 +1,5 @@
 package com.example.mitchell.UI;
 
-import android.app.Activity;
 import android.arch.persistence.room.Room;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -17,7 +16,6 @@ import java.util.List;
 import Controller.Controller;
 import Controller.EntryWrapper;
 import Models.Car;
-import Models.Entry;
 import Models.EntryTag;
 import Models.PetrolType;
 import database.AppDatabase;
@@ -166,9 +164,9 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
             @Override
             protected Void doInBackground(Void... voids) {
                 Log.d("R", String.format("deleting entry: %d", entry.getEid()));
-                Log.d("R", String.valueOf(db.entryDao().getCount()));
-                db.entryDao().deleteId(entry.getEid());
-                Log.d("R", String.valueOf(db.entryDao().getCount()));
+                Log.d("R", String.valueOf(db.entryDao().countEntries()));
+                db.entryDao().deleteEntryFromID(entry.getEid());
+                Log.d("R", String.valueOf(db.entryDao().countEntries()));
                 return null;
             }
             @Override

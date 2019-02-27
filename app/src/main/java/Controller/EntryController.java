@@ -32,7 +32,7 @@ public class EntryController {
     }
 
     public List<EntryWrapper> getAllEntries(int cid) {
-        List<Entry> entries = db.entryDao().getAllEntries(cid);
+        List<Entry> entries = db.entryDao().getAllEntriesOnCar(cid);
         List<EntryWrapper> wrappedEntries = new ArrayList<>();
         for(Entry entry : entries) {
             wrappedEntries.add(new EntryWrapper(entry, db));
