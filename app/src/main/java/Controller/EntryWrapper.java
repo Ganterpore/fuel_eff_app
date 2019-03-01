@@ -34,6 +34,7 @@ public class EntryWrapper {
         try {
             this.notes = db.entryDao().getNote(entry.getEid()).getNote();
         } catch (NullPointerException e) {
+            //if there is no note, create an empty string
             this.notes = "";
         }
     }
@@ -51,6 +52,7 @@ public class EntryWrapper {
         try {
             this.notes = db.entryDao().getNote(entry.getEid()).getNote();
         } catch (NullPointerException e) {
+            //if there is no note, create an empty string
             this.notes = "";
         }
     }

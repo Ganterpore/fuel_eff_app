@@ -32,7 +32,7 @@ public class Car {
     }
 
     /**
-     * Createor for the Car object
+     * Creator for the Car object
      * @param cid, the ID of the car in the database
      * @param licensePlate, the license plate of said car
      * @param model, the Moddel of the car
@@ -54,9 +54,11 @@ public class Car {
 
     @Override
     public boolean equals(Object obj) {
+        //if the object is not a car, it is not equal
         if(!(obj instanceof Car)) {
             return false;
         }
+        //otherwise it is equal if it has the same ID
         Car carObj = (Car) obj;
         return carObj.cid==this.cid;
     }

@@ -27,8 +27,11 @@ public class EntryController {
      * @return the new Entry, in the form of an EntryWrapper
      */
     public EntryWrapper newEntry(long date, double trip, double litres, double price, int car, int fuel) {
+        //Creating the Entry
         EntryWrapper entry = new EntryWrapper(date, trip, litres, price, car, fuel, db);
+        //adding the entry to the database and getting the new ID
         int eid = (int) this.db.entryDao().addEntry(entry.entry);
+        //adding the ID to the EntryWrapper, and returning it
         entry.entry.setEid(eid);
         return entry;
     }
@@ -52,7 +55,9 @@ public class EntryController {
      * @return a List of Entries on a car, in the form of EntryWrappers
      */
     public List<EntryWrapper> getAllEntriesOnCar(int cid) {
+        //getting all the entries on the car
         List<Entry> entries = db.entryDao().getAllEntriesOnCar(cid);
+        //wrapping the entries before returning them
         List<EntryWrapper> wrappedEntries = new ArrayList<>();
         for(Entry entry : entries) {
             wrappedEntries.add(new EntryWrapper(entry, db));
@@ -67,7 +72,9 @@ public class EntryController {
      * @return a List of Entry's in the form of EntryWrappers
      */
     public List<EntryWrapper> getAllEntriesWithTag(int cid, int tid) {
+        //getting all the entries with the tag
         List<Entry> entries = db.entryDao().getEntriesWithTag(cid, tid);
+        //wrapping the entries before returning them
         List<EntryWrapper> wrappedEntries = new ArrayList<>();
         for(Entry entry : entries) {
             wrappedEntries.add(new EntryWrapper(entry, db));

@@ -1,8 +1,6 @@
 package com.example.mitchell.UI;
 
 import android.app.Activity;
-import android.arch.persistence.room.Room;
-import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -12,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,14 +22,12 @@ import java.util.List;
 
 import Controller.Controller;
 import Controller.EntryWrapper;
-import database.AppDatabase;
 import Controller.TripWrapper;
 
 /**
  * used to display a history of all entries that have been given
  */
 public class EntryHistoryActivity extends AppCompatActivity {
-
     private EntryAdapter entryAdapter;
     private TripAdapter tripAdapter;
     private int carID;
@@ -45,9 +40,12 @@ public class EntryHistoryActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        //setting the views
         historyList = findViewById(R.id.history);
         entryAdapter = new EntryAdapter(this);
         tripAdapter = new TripAdapter(this);
+
+        //creating the list adapter
         historyList.setAdapter(entryAdapter);
         historyList.setLayoutManager(new LinearLayoutManager(this));
 
@@ -56,22 +54,20 @@ public class EntryHistoryActivity extends AppCompatActivity {
         BottomNavigationView navigation = findViewById(R.id.type_switcher);
         navigation.setOnNavigationItemSelectedListener(mOnNavigationItemSelectedListener);
 
-
-        fillList(entryAdapter, tripAdapter, carID, getApplicationContext());
+        //filling the list with values
+        fillList(entryAdapter, tripAdapter, carID);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        /*
-         * means that whenever the page is reopened the list will be rebuilt.
-         * This allows edits to flow back in.
-         */
-        fillList(entryAdapter, tripAdapter, carID, getApplicationContext());
+        //list is refreshed onResume, this allows edits to flow back through
+        fillList(entryAdapter, tripAdapter, carID);
     }
 
     /**
-     * Used to update the page view when different options are selected on the bottom navigation view
+     * Used to update the page view when different options are selected on the bottom navigation view.
+     * Changes the adapter when a different view is selected
      */
     private BottomNavigationView.OnNavigationItemSelectedListener mOnNavigationItemSelectedListener
             = new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -94,18 +90,17 @@ public class EntryHistoryActivity extends AppCompatActivity {
      * used to populate entries to the RecyclerView on the page.
      */
     private static void fillList(final EntryAdapter entryAdapter, final TripAdapter tripAdapter,
-                                 final int carID, Context context) {
-        final AppDatabase db = Room.databaseBuilder(context,
-                AppDatabase.class, "database-name").build();
-
+                                 final int carID) {
         new AsyncTask<Void, Void, List<EntryWrapper>>() {
             @Override
             protected List<EntryWrapper> doInBackground(Void... voids) {
+                //getting the entries from the database
                 return Controller.getCurrentController().entryC.getAllEntriesOnCar(carID);
             }
 
             @Override
             protected void onPostExecute(List<EntryWrapper> entries) {
+                //updating the adapters
                 entryAdapter.clear();
                 entryAdapter.addAll(entries);
                 entryAdapter.notifyDataSetChanged();
@@ -124,7 +119,6 @@ public class EntryHistoryActivity extends AppCompatActivity {
     public void openEntry(EntryWrapper entry) {
         Intent intent = new Intent(this, EntryActivity.class);
         intent.putExtra("eid", entry.getEid());
-        Log.d("R", String.valueOf(entry.getEid()));
         startActivity(intent);
     }
 
@@ -147,24 +141,23 @@ public class EntryHistoryActivity extends AppCompatActivity {
         private Activity activity;
         private List<EntryWrapper> entries;
 
-        public EntryAdapter(Activity activity) {
+        EntryAdapter(Activity activity) {
             this.activity = activity;
             entries = new ArrayList<>();
         }
 
-        public void clear() {
+        void clear() {
             entries.clear();
         }
 
-        public void addAll(List<EntryWrapper> newEntries) {
+        void addAll(List<EntryWrapper> newEntries) {
             this.entries.addAll(newEntries);
         }
 
         @Override
         public EntryViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(activity).inflate(R.layout.entry_list_item, parent, false);
-            EntryViewHolder entryVH = new EntryViewHolder(v);
-            return entryVH;
+            return new EntryViewHolder(v);
         }
 
         @Override
@@ -182,20 +175,22 @@ public class EntryHistoryActivity extends AppCompatActivity {
     /**
      * The RecyclerView ViewHolder for handling Entry's
      */
-    public class EntryViewHolder extends RecyclerView.ViewHolder {
+    class EntryViewHolder extends RecyclerView.ViewHolder {
         private DecimalFormat decimalFormat = new DecimalFormat("#.00");
         private View itemView;
 
-        public EntryViewHolder(View itemView) {
+        EntryViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;
         }
 
-        public void build(final EntryWrapper entry) {
+        void build(final EntryWrapper entry) {
+            //getting the views
             TextView listDate = itemView.findViewById(R.id.listDate);
             TextView listEfficiency = itemView.findViewById(R.id.listEfficiency);
             TextView listNote = itemView.findViewById(R.id.list_note);
 
+            //setting the views
             listDate.setText(entry.getDateAsString());
             listEfficiency.setText(decimalFormat.format(entry.getEfficiency()));
             listNote.setText(entry.getNote());
@@ -216,24 +211,23 @@ public class EntryHistoryActivity extends AppCompatActivity {
         Activity activity;
         List<EntryWrapper> entries;
 
-        public TripAdapter(Activity activity) {
+        TripAdapter(Activity activity) {
             this.activity = activity;
             this.entries = new ArrayList<>();
         }
 
-        public void clear() {
+        void clear() {
             entries.clear();
         }
 
-        public void addAll(List<EntryWrapper> newEntries) {
+        void addAll(List<EntryWrapper> newEntries) {
             entries.addAll(newEntries);
         }
 
         @Override
         public TripViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
             View v = LayoutInflater.from(activity).inflate(R.layout.trip_list_item, parent, false);
-            TripViewHolder tripVH = new TripViewHolder(v);
-            return tripVH;
+            return new TripViewHolder(v);
         }
 
         @Override
@@ -252,26 +246,30 @@ public class EntryHistoryActivity extends AppCompatActivity {
     /**
      * The RecyclerView ViewHolder for handling Trips
      */
-    public class TripViewHolder extends RecyclerView.ViewHolder {
+    class TripViewHolder extends RecyclerView.ViewHolder {
         private DecimalFormat decimalFormat = new DecimalFormat("#.00");
         private View itemView;
         private TripWrapper trip;
         private int entry1ID;
         private int entry2ID;
 
-        public TripViewHolder(View itemView) {
+        TripViewHolder(View itemView) {
             super(itemView);
             this.itemView = itemView;
         }
 
-        public void build(EntryWrapper entry1, EntryWrapper entry2) {
+        void build(EntryWrapper entry1, EntryWrapper entry2) {
+            //create trip from the two entries
             entry1ID = entry1.getEid();
             entry2ID = entry2.getEid();
             trip = new TripWrapper(entry1, entry2);
+
+            //getting the views
             TextView tripDate = itemView.findViewById(R.id.tripDate);
             TextView tripLength = itemView.findViewById(R.id.trip_length);
             TextView tripDays = itemView.findViewById(R.id.trip_days);
 
+            //setting the views
             tripDate.setText(trip.getStartDateAsString());
             tripDays.setText(String.valueOf(trip.getTrip().getDays()));
             tripLength.setText(decimalFormat.format(trip.getTrip().getDistance()));
@@ -284,5 +282,4 @@ public class EntryHistoryActivity extends AppCompatActivity {
             });
         }
     }
-
 }

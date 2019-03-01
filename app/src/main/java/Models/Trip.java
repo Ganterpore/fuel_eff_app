@@ -1,7 +1,5 @@
 package Models;
 
-import android.util.Log;
-
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -32,10 +30,9 @@ public class Trip {
     }
 
     /**
-     * finds the days between two given dates, used to find the trip length.
+     * finds the days between two given dates, used to find the trip length.Z
      */
     private int getDaysBetween(long startDate, long finishDate) {
-        Log.d("a", "getDaysBetween: getting days, = "+(int) TimeUnit.DAYS.convert(finishDate-startDate, TimeUnit.MILLISECONDS));
         return (int) TimeUnit.DAYS.convert(finishDate-startDate, TimeUnit.MILLISECONDS);
     }
 

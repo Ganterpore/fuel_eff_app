@@ -54,9 +54,7 @@ public class Controller {
         car.setModel(model);
         car.setName(carName);
 
-        String cid = Long.toString(db.entryDao().addCar(car));
-        Log.d("A", "newCar: " + cid);
-        return cid;
+        return Long.toString(db.entryDao().addCar(car));
     }
 
     public Car getCar(int cid) {

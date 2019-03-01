@@ -51,13 +51,12 @@ public class EntryTag {
 
     @Override
     public boolean equals(Object obj) {
+        //if the object is not an EntryTag, it is not equal
         if(!(obj instanceof EntryTag)) {
             return false;
         }
+        //otherwise they are equal if they have the same ID
         EntryTag otherTag = (EntryTag) obj;
-        if(otherTag.tid==this.tid) {
-            return true;
-        }
-        return false;
+        return otherTag.tid == this.tid;
     }
 }
