@@ -4,10 +4,9 @@ import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-
+/**
+ * Contains all the information for a Car object.
+ */
 @Entity
 public class Car {
     @PrimaryKey(autoGenerate = true)
@@ -28,6 +27,14 @@ public class Car {
     public Car() {
     }
 
+    /**
+     * Creator for the Car object
+     * @param cid, the ID of the car in the database
+     * @param licensePlate, the license plate of said car
+     * @param model, the Moddel of the car
+     * @param make, the make of the car
+     * @param name, the users name for the car
+     */
     public Car(int cid, String licensePlate, String model, String make, String name) {
         this.cid = cid;
         this.licensePlate = licensePlate;
@@ -43,9 +50,11 @@ public class Car {
 
     @Override
     public boolean equals(Object obj) {
+        //if the object is not a car, it is not equal
         if(!(obj instanceof Car)) {
             return false;
         }
+        //otherwise it is equal if it has the same ID
         Car carObj = (Car) obj;
         return carObj.cid==this.cid;
     }
@@ -89,19 +98,5 @@ public class Car {
     public void setName(String name) {
         this.name = name;
     }
-
-    //	public void addRefill(Refill refill) {
-//		refills.add(refill);
-//	}
-//	public void removeRefill(Refill refill) {
-//		refills.remove(refill);
-//	}
-//	public Refill getLatestRefill(Refill refill) {
-//		return Collections.max(refills);
-//	}
-//	public ArrayList<Refill> getAllRefills() {
-//		return (ArrayList<Refill>) this.refills.clone();
-//	}
-
 }
 

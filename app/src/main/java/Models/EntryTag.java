@@ -2,13 +2,11 @@ package Models;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
-import android.os.Parcel;
-import android.os.Parcelable;
 
-import static android.arch.persistence.room.ForeignKey.CASCADE;
-
+/**
+ * Class for a Tag which can be placmd on entries
+ */
 @Entity
 public class EntryTag {
     @PrimaryKey(autoGenerate = true)
@@ -17,6 +15,10 @@ public class EntryTag {
     @ColumnInfo
     private String name;
 
+    /**
+     * Creator for an EntryTag
+      * @param name, the name of the tag
+     */
     public EntryTag(String name) {
         this.name = name;
     }
@@ -44,13 +46,12 @@ public class EntryTag {
 
     @Override
     public boolean equals(Object obj) {
+        //if the object is not an EntryTag, it is not equal
         if(!(obj instanceof EntryTag)) {
             return false;
         }
+        //otherwise they are equal if they have the same ID
         EntryTag otherTag = (EntryTag) obj;
-        if(otherTag.tid==this.tid) {
-            return true;
-        }
-        return false;
+        return otherTag.tid == this.tid;
     }
 }

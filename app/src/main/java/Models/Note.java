@@ -7,6 +7,9 @@ import android.arch.persistence.room.PrimaryKey;
 
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
+/**
+ * Class for notes which can be added to an Entry
+ */
 @Entity(foreignKeys = @ForeignKey(
         entity = Entry.class,
         parentColumns = "eid",
@@ -19,6 +22,11 @@ public class Note {
     @PrimaryKey
     private int eid;
 
+    /**
+     * Creator for the Note class
+     * @param note, the note which to add
+     * @param eid, the ID of the entry to add the note to
+     */
     public Note(String note, int eid) {
         this.note = note;
         this.eid = eid;
