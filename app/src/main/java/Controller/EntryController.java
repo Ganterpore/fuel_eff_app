@@ -1,7 +1,5 @@
 package Controller;
 
-import android.util.Log;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,7 +16,7 @@ public class EntryController {
      * creates a new Controller
      * @param db, the database to access information from.
      */
-    public EntryController(AppDatabase db) {
+    EntryController(AppDatabase db) {
         this.db = db;
     }
 

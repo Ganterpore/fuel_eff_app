@@ -1,15 +1,14 @@
 package com.example.mitchell.UI;
 
-import android.arch.persistence.room.Room;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.List;
 
@@ -18,7 +17,6 @@ import Controller.EntryWrapper;
 import Models.Car;
 import Models.EntryTag;
 import Models.PetrolType;
-import database.AppDatabase;
 
 /**
  * Activity for displaying a single Entry to the user
@@ -73,8 +71,8 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
      * Used for updating all the fields on the screen with information from the database
      */
     private static void updatePage(final EntryActivity activity, final int eid) {
+        final DecimalFormat decimalFormat = new DecimalFormat("#.00");
         new AsyncTask<Void, Void, EntryWrapper>() {
-
             @Override
             protected EntryWrapper doInBackground(Void... voids) {
                 //get the entry, and other information, from the database
@@ -91,15 +89,15 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
             protected void onPostExecute(EntryWrapper entryWrapper) {
                 activity.entry = entryWrapper;
                 //update the views to reflect the data on the database
-                activity.efficiency.setText(String.format("%3.2f L/100km", entryWrapper.getEfficiency()));
-                activity.litres.setText(String.format("Volume: %3.2fL",entryWrapper.getLitres()));
-                activity.distance.setText(String.format("Distance: %3.2fkm", entryWrapper.getTrip()));
-                activity.cost.setText(String.format("Cost: $%3.2f", entryWrapper.getCost()));
-                activity.cpkm.setText(String.format("cost/distance: %3.2fc/km", entryWrapper.getCPerKm()));
-                activity.note.setText(String.format("Note:\n"+ entryWrapper.getNote()));
+                activity.efficiency.setText(decimalFormat.format(entryWrapper.getEfficiency()));
+                activity.litres.setText(decimalFormat.format(entryWrapper.getLitres()));
+                activity.distance.setText(decimalFormat.format(entryWrapper.getTrip()));
+                activity.cost.setText(decimalFormat.format(entryWrapper.getCost()));
+                activity.cpkm.setText(decimalFormat.format(entryWrapper.getCPerKm()));
+                activity.note.setText(entryWrapper.getNote());
 
-                activity.prevTags.setText("Prev trip:\n"+Arrays.toString(entryWrapper.getTags(false).toArray()));
-                activity.nextTags.setText("Next trip:\n"+Arrays.toString(entryWrapper.getTags(true).toArray()));
+                activity.prevTags.setText(Arrays.toString(entryWrapper.getTags(false).toArray()));
+                activity.nextTags.setText(Arrays.toString(entryWrapper.getTags(true).toArray()));
             }
         }.execute();
     }

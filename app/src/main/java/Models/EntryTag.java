@@ -2,12 +2,7 @@ package Models;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
-import android.os.Parcel;
-import android.os.Parcelable;
-
-import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 /**
  * Class for a Tag which can be placmd on entries

@@ -22,9 +22,11 @@ import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import java.text.DecimalFormat;
 import java.util.List;
 
 import Controller.Controller;
+import Controller.EntryController;
 import Models.Car;
 import Models.EntryTag;
 import Models.PetrolType;
@@ -101,6 +103,7 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
      * @param activity, the MainActivity to update
      */
     private static void updateDetails(final MainActivity activity) {
+        final DecimalFormat decimalFormat = new DecimalFormat("#.00");
         new AsyncTask<Void, Void, Boolean>() {
 
             @Override
@@ -123,10 +126,11 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
                     activity.currentCar = Controller.getCurrentController().getCar(activity.carID);
 
                     //setting the views
-                    activity.efficiency.setText(String.format("%3.2f", activity.controller.entryC.getAverageEfficiency(activity.carID)));
-                    activity.distance.setText(String.format("%3.2f", activity.controller.entryC.getTotalDistance(activity.carID)));
-                    activity.cost.setText(String.format("%3.2f", activity.controller.entryC.getTotalCost(activity.carID)));
-                    activity.litres.setText(String.format("%3.2f", activity.controller.entryC.getTotalLitres(activity.carID)));
+                    EntryController entryC = activity.controller.entryC;
+                    activity.efficiency.setText(decimalFormat.format(entryC.getAverageEfficiency(activity.carID)));
+                    activity.distance.setText(decimalFormat.format(entryC.getTotalDistance(activity.carID)));
+                    activity.cost.setText(decimalFormat.format(entryC.getTotalCost(activity.carID)));
+                    activity.litres.setText(decimalFormat.format(entryC.getTotalLitres(activity.carID)));
 
                     //updating the spinner with the car details
                     ArrayAdapter<Car> carArrayAdapter = (ArrayAdapter<Car>) activity.carChoices.getAdapter();
@@ -234,29 +238,21 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
         // On Honeycomb MR2 we have the ViewPropertyAnimator APIs, which allow
         // for very easy animations. If available, use these APIs to fade-in
         // the progress spinner.
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-            int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
+        int shortAnimTime = getResources().getInteger(android.R.integer.config_shortAnimTime);
 
 //            content.setAlpha(0.5f);
-            content.setVisibility(show ? View.GONE : View.VISIBLE);
+        content.setVisibility(show ? View.GONE : View.VISIBLE);
 
-            fab.setVisibility(show ? View.GONE : View.VISIBLE);
+        fab.setVisibility(show ? View.GONE : View.VISIBLE);
 
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            mProgressView.animate().setDuration(shortAnimTime).alpha(
-                    show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-                }
-            });
-        } else {
-            // The ViewPropertyAnimator APIs are not available, so simply show
-            // and hide the relevant UI components.
-            mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
-            fab.setVisibility(show ? View.GONE : View.VISIBLE);
-            content.setVisibility(show ? View.GONE : View.VISIBLE);
-        }
+        mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+        mProgressView.animate().setDuration(shortAnimTime).alpha(
+                show ? 1 : 0).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                mProgressView.setVisibility(show ? View.VISIBLE : View.GONE);
+            }
+        });
     }
 
     /**
@@ -290,6 +286,7 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
      * with that car
      */
     public static void setCar(final MainActivity activity, final Car car) {
+        final DecimalFormat decimalFormat = new DecimalFormat("#.00");
         //the stats to update. Stored as arrays to allow use as final
         final double[] averageEfficiency = new double[1];
         final double[] totalDistance = new double[1];
@@ -319,10 +316,10 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
                 activity.carID = car.getCid();
 
                 //update the view
-                activity.efficiency.setText(String.format("%3.2f", averageEfficiency[0]));
-                activity.distance.setText(String.format("%3.2f", totalDistance[0]));
-                activity.cost.setText(String.format("%3.2f", totalCost[0]));
-                activity.litres.setText(String.format("%3.2f", totalLitres[0]));
+                activity.efficiency.setText(decimalFormat.format(averageEfficiency[0]));
+                activity.distance.setText(decimalFormat.format(totalDistance[0]));
+                activity.cost.setText(decimalFormat.format(totalCost[0]));
+                activity.litres.setText(decimalFormat.format(totalLitres[0]));
 
                 //update the spinner
                 ArrayAdapter<Car> carArrayAdapter = (ArrayAdapter<Car>) activity.carChoices.getAdapter();

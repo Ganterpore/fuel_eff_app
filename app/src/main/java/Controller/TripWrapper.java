@@ -48,7 +48,7 @@ public class TripWrapper {
     /**
      * Gets the tags assosciated with this trip. These are the tags for the next next trip of entry 1,
      * and the previous trip of entry 2.
-     * @return, all the asssosciated trips
+     * @return all the asssosciated trips
      */
     public List<EntryTag> getTags() {
         return tags;

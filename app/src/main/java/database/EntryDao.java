@@ -41,9 +41,6 @@ public interface EntryDao {
     @Query("SELECT * FROM entry WHERE car = :cid ORDER BY date")
     List<Entry> getAllEntriesOnCar(int cid);
 
-    @Query("SELECT * FROM entry")
-    Cursor getAllCursor();
-
     @Query("SELECT COUNT(*) FROM entry")
     int countEntries();
 

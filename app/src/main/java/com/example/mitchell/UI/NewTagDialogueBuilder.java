@@ -4,7 +4,6 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.AsyncTask;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -22,7 +21,7 @@ public class NewTagDialogueBuilder {
     public static void createTagDialogue(final DatabaseObserver observer, Activity activity) {
         //inflating views
         LayoutInflater layoutInflater = LayoutInflater.from(activity);
-        View addTagLayout  =   layoutInflater.inflate(R.layout.new_tag_dialogue_box, null);
+        View addTagLayout = layoutInflater.inflate(R.layout.new_tag_dialogue_box, null);
 
         //getting views
         final EditText tagName = addTagLayout.findViewById(R.id.tag_name);

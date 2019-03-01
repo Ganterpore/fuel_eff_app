@@ -2,16 +2,12 @@ package Controller;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
-import android.util.Log;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import Models.Car;
-import Models.Entry;
 import Models.EntryTag;
 import Models.PetrolType;
-import Models.TagsOnEntry;
 import database.AppDatabase;
 
 /**
