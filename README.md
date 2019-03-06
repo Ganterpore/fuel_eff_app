@@ -1,6 +1,6 @@
 # Fuel Efficiency Tracking
 *Note this app is still in beta and is unfinished* <br/>
-This app is designed to be used to record the fuel usage of a users car, by getting them to add an entry whenever they fill up their car. Uses can then use this information to record how much they are spending on fuel, and to figure out how to reduce this.
+This app is designed to be used to record the fuel usage of a users car, by getting them to add an entry whenever they fill up their car. Users can then use this information to record how much they are spending on fuel, and to figure out how to reduce this.
 All data is stored locally to the device, however it is backed up to the cloud.
 
 # How to use the app
