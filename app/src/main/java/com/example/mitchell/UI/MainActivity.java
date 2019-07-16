@@ -32,6 +32,7 @@ import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.SpinnerAdapter;
+import android.widget.TabWidget;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -44,8 +45,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Properties;
+import java.text.DecimalFormat;
 
 import Controller.Controller;
+import Controller.EntryController;
 import Models.Car;
 import Models.EntryTag;
 import Models.PetrolType;
@@ -64,6 +67,10 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
     private List<PetrolType> fuels;
     private List<EntryTag> tags;
     private Car currentCar;
+
+    private TextView make;
+    private TextView model;
+    private TextView license;
     private TextView efficiency;
     private TextView distance;
     private TextView cost;
@@ -85,7 +92,10 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
 
         controller = new Controller(getApplicationContext());
 
-
+        //getting the views
+        make = findViewById(R.id.make);
+        model = findViewById(R.id.model);
+        license = findViewById(R.id.license_plate);
         efficiency = findViewById(R.id.AverageEfficiency);
         distance = findViewById(R.id.TotalDistance);
         cost = findViewById(R.id.TotalCost);
@@ -130,6 +140,7 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
     }
 
     private static void updateDetails(final MainActivity activity) {
+        final DecimalFormat decimalFormat = new DecimalFormat("#.00");
         new AsyncTask<Void, Void, Boolean>() {
 
             @Override
@@ -153,10 +164,15 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
 
                     activity.currentCar = Controller.getCurrentController().getCar(activity.carID);
 
-                    activity.efficiency.setText(String.format("%3.2f", activity.controller.entryC.getAverageEfficiency(activity.carID)));
-                    activity.distance.setText(String.format("%3.2f", activity.controller.entryC.getTotalDistance(activity.carID)));
-                    activity.cost.setText(String.format("%3.2f", activity.controller.entryC.getTotalCost(activity.carID)));
-                    activity.litres.setText(String.format("%3.2f", activity.controller.entryC.getTotalLitres(activity.carID)));
+                    //setting the views
+                    EntryController entryC = activity.controller.entryC;
+                    activity.make.setText(activity.currentCar.getMake());
+                    activity.model.setText(activity.currentCar.getModel());
+                    activity.license.setText(activity.currentCar.getLicensePlate());
+                    activity.efficiency.setText(decimalFormat.format(entryC.getAverageEfficiency(activity.carID)));
+                    activity.distance.setText(decimalFormat.format(entryC.getTotalDistance(activity.carID)));
+                    activity.cost.setText(decimalFormat.format(entryC.getTotalCost(activity.carID)));
+                    activity.litres.setText(decimalFormat.format(entryC.getTotalLitres(activity.carID)));
 
                     ArrayAdapter<Car> carArrayAdapter = (ArrayAdapter<Car>) activity.carChoices.getAdapter();
                     carArrayAdapter.clear();
@@ -302,6 +318,7 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
         private double totalDistance;
         private double totalCost;
         private double totalLitres;
+        final DecimalFormat decimalFormat = new DecimalFormat("#.00");
 
         public CarSetter(MainActivity activity, Car car) {
             this.activity = activity;
@@ -326,13 +343,18 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
 
         @Override
         protected void onPostExecute(Void aVoid) {
+
             activity.currentCar = car;
             activity.carID = car.getCid();
 
-            activity.efficiency.setText(String.format("%3.2f", averageEfficiency));
-            activity.distance.setText(String.format("%3.2f", totalDistance));
-            activity.cost.setText(String.format("%3.2f", totalCost));
-            activity.litres.setText(String.format("%3.2f", totalLitres));
+                //update the view
+                activity.make.setText(car.getMake());
+                activity.model.setText(car.getModel());
+                activity.license.setText(car.getLicensePlate());
+                activity.efficiency.setText(decimalFormat.format(averageEfficiency));
+                activity.distance.setText(decimalFormat.format(totalDistance));
+                activity.cost.setText(decimalFormat.format(totalCost));
+                activity.litres.setText(decimalFormat.format(totalLitres));
 
             ArrayAdapter<Car> carArrayAdapter = (ArrayAdapter<Car>) activity.carChoices.getAdapter();
             carArrayAdapter.clear();

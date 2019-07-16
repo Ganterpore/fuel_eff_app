@@ -1,127 +1,147 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="com.example.mitchell.UI.MainActivity"
-    tools:showIn="@layout/activity_main"
-    android:id="@+id/content">
+    tools:showIn="@layout/activity_main">
 
-    <Spinner
-        android:id="@+id/car_chooser"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center|top"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
 
-    <TextView
-        android:id="@+id/AverageEfficiencyEquals"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginLeft="16dp"
-        android:text="@string/average_efficiency"
-        app:layout_constraintEnd_toStartOf="@+id/AverageEfficiency"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/car_chooser"
-        android:layout_marginStart="16dp" />
-    <TextView
-        android:id="@+id/AverageEfficiency"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="top|center">
 
-        android:text="@string/DefaultFloat"
-        app:layout_constraintBaseline_toBaselineOf="@id/AverageEfficiencyEquals"
-        app:layout_constraintLeft_toLeftOf="@id/AverageEfficiencyEquals"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
-    <TextView
-        android:id="@+id/TotalDistanceEquals"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginLeft="16dp"
-        android:text="@string/total_distance"
-        app:layout_constraintEnd_toStartOf="@+id/TotalDistance"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@id/AverageEfficiencyEquals" />
-    <TextView
-        android:id="@+id/TotalDistance"
-        android:layout_marginTop="32dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        <Spinner
+            android:id="@+id/car_chooser"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center|top" />
 
-        android:text="@string/DefaultFloat"
-        app:layout_constraintBaseline_toBaselineOf="@id/TotalDistanceEquals"
-        app:layout_constraintLeft_toLeftOf="@id/TotalDistanceEquals"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/AverageEfficiency" />
 
-    <TextView
-        android:id="@+id/TotalCostEquals"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:layout_marginLeft="16dp"
-        android:layout_marginTop="32dp"
-        android:text="@string/total_cost"
-        app:layout_constraintEnd_toStartOf="@+id/TotalCost"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@id/TotalDistanceEquals" />
-    <TextView
-        android:id="@+id/TotalCost"
-        android:layout_marginTop="32dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:text="@string/DefaultFloat"
-        app:layout_constraintBaseline_toBaselineOf="@id/TotalCostEquals"
-        app:layout_constraintLeft_toLeftOf="@id/TotalCostEquals"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/TotalDistanceEquals" />
-    <TextView
-        android:id="@+id/TotalLitresEquals"
-        android:layout_width="wrap_content"
-        android:layout_height="16dp"
-        android:layout_marginTop="32dp"
-        android:layout_marginLeft="16dp"
-        android:text="@string/total_litres"
-        app:layout_constraintEnd_toStartOf="@+id/TotalLitres"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="@id/TotalCostEquals" />
-    <TextView
-        android:id="@+id/TotalLitres"
-        android:layout_marginTop="32dp"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginLeft="16dp"
-        android:layout_marginRight="16dp"
-        android:text="@string/DefaultFloat"
-        app:layout_constraintBaseline_toBaselineOf="@id/TotalLitresEquals"
-        app:layout_constraintLeft_toLeftOf="@id/TotalLitresEquals"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="@id/TotalCostEquals" />
+
+        <LinearLayout
+            android:id="@+id/make_model"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+
+
+            <TextView
+                android:id="@+id/make"
+                android:layout_width="wrap_content"
+                android:text="make"
+                android:layout_height="wrap_content"
+                android:paddingRight="16dp"/>
+
+            <TextView
+                android:id="@+id/model"
+                android:text="model"
+                app:layout_constraintLeft_toRightOf="@+id/make"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content" />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/license_plate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="License"
+            android:paddingBottom="32dp"
+            android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/AverageEfficiencyEquals"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/average_efficiency"
+                android:paddingRight="16dp"/>
+
+            <TextView
+                android:id="@+id/AverageEfficiency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/DefaultFloat"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/TotalDistanceEquals"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/total_distance"
+                android:paddingRight="16dp"/>
+
+            <TextView
+                android:id="@+id/TotalDistance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/DefaultFloat"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/TotalCostEquals"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/total_cost"
+                android:paddingRight="16dp"/>
+
+            <TextView
+                android:id="@+id/TotalCost"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/DefaultFloat"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+        </LinearLayout>
+
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content">
+            <TextView
+                android:id="@+id/TotalLitresEquals"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/total_litres"
+                android:paddingRight="16dp"/>
+
+            <TextView
+                android:id="@+id/TotalLitres"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/DefaultFloat"
+                android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+        </LinearLayout>
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/HistoryButton"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="128dp"
-        android:layout_marginLeft="32dp"
-        android:layout_marginRight="32dp"
         android:onClick="openHistory"
         android:text="@string/history"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent" />
+        android:layout_marginBottom="16dp"/>
 
 
 </android.support.constraint.ConstraintLayout>
