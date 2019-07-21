@@ -134,14 +134,28 @@
 
     </LinearLayout>
 
-    <Button
-        android:id="@+id/HistoryButton"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:onClick="openHistory"
-        android:text="@string/history"
+        android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginBottom="16dp"/>
+        android:layout_marginBottom="16dp">
+
+        <Button
+            android:id="@+id/data_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Data"
+            android:onClick="openData"/>
+
+        <Button
+            android:id="@+id/HistoryButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:onClick="openHistory"
+            android:text="@string/history" />
+
+    </LinearLayout>
 
 
 </android.support.constraint.ConstraintLayout>

@@ -28,7 +28,7 @@ public interface EntryDao {
     @Query("SELECT * FROM entry WHERE car = :cid ORDER BY date")
     List<Entry> getAllEntries(int cid);
 
-    @Query("SELECT * FROM entry")
+    @Query("SELECT * FROM entry ORDER BY date")
     List<Entry> getAllEntries();
 
     @Query("SELECT * FROM entry")

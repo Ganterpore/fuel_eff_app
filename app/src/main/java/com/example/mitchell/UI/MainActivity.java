@@ -256,6 +256,13 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
         startActivity(intent);
     }
 
+    public void openData(View view) {
+        //action when data button is pressed
+        Intent intent = new Intent(this, EfficiencyVTimePlotActivity.class);
+        intent.putExtra("carID", carID);
+        startActivity(intent);
+    }
+
 
     @TargetApi(Build.VERSION_CODES.HONEYCOMB_MR2)
     private void showProgress(final boolean show) {
