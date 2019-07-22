@@ -12,15 +12,15 @@
         android:layout_width="match_parent">
 
         <com.androidplot.xy.XYPlot
-            style="@style/APDefacto.Dark"
             android:id="@+id/plot"
+            style="@style/graphStyle"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            ap:title="Efficiency over time"
-            ap:rangeTitle="Efficiency"
             ap:domainTitle="Date"
+            ap:lineLabelRotationBottom="-45"
             ap:lineLabels="left|bottom"
-            ap:lineLabelRotationBottom="-45"/>
+            ap:rangeTitle="Efficiency"
+            ap:title="Efficiency over time" />
     </LinearLayout>
 
 </android.support.constraint.ConstraintLayout>

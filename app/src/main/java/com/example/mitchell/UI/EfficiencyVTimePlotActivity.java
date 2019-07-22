@@ -4,6 +4,7 @@ import android.arch.persistence.room.Room;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Debug;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 
@@ -40,14 +41,14 @@ public class EfficiencyVTimePlotActivity extends AppCompatActivity {
         setContentView(R.layout.activity_efficiency_vtime_plot);
 
         // initialize our XYPlot reference:
-        plot = (XYPlot) findViewById(R.id.plot);
+        plot = findViewById(R.id.plot);
 
         //get the carID and build the graph for it
         carID = getIntent().getIntExtra("carID", 0);
         buildGraph(plot, carID, this);
     }
 
-    private static void buildGraph(final XYPlot plot, final Integer carID, Context context) {
+    private static void buildGraph(final XYPlot plot, final Integer carID, final Context context) {
         new AsyncTask<Void, Void, List<EntryWrapper>>() {
             @Override
             /**
@@ -75,7 +76,13 @@ public class EfficiencyVTimePlotActivity extends AppCompatActivity {
 
                 //creating series
                 XYSeries efficiencySeries = new SimpleXYSeries(dateValues, efficiency, "Efficiency");
-                LineAndPointFormatter efficiencyFormat = new LineAndPointFormatter(Color.RED, Color.GREEN, Color.BLUE, null);
+//                LineAndPointFormatter efficiencyFormat =
+//                        new LineAndPointFormatter(context, R.xml.line_point_formatter_with_labels);
+                int graphColor = ContextCompat.getColor(context, R.color.colorPrimary);
+                graphColor = Color.argb(95, Color.red(graphColor), Color.green(graphColor), Color.blue(graphColor));
+                LineAndPointFormatter efficiencyFormat = new LineAndPointFormatter(R.color.colorPrimary, R.color.colorPrimaryDark, graphColor, null);
+                efficiencyFormat.setInterpolationParams(
+                        new CatmullRomInterpolator.Params(10, CatmullRomInterpolator.Type.Centripetal));
 
                 //updating plot
                 plot.addSeries(efficiencySeries, efficiencyFormat);
