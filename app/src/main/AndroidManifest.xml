@@ -37,7 +37,8 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".TripActivity"></activity>
+        <activity android:name=".TripActivity" />
+        <activity android:name=".DataPlotsActivity"></activity>
     </application>
 
 </manifest>

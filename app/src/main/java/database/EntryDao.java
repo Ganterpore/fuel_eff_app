@@ -28,6 +28,9 @@ public interface EntryDao {
     /***************************Entry Code********************************/
     @Insert
     long addEntry(Entry entry);
+  
+    @Query("SELECT * FROM entry ORDER BY date")
+    List<Entry> getAllEntries();
 
     @Insert
     void insertEntries(Entry... entries);
