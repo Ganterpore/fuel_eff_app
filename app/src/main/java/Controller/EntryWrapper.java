@@ -52,7 +52,6 @@ public class EntryWrapper {
         } catch (NullPointerException e) {
             this.notes = "";
         }
-        Log.d("A", "EntryWrapper: "+notes);
     }
 
     public EntryWrapper(long date, double trip, double litres, double price, int car, int fuel, AppDatabase db) {

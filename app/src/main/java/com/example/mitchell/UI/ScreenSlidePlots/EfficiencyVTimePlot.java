@@ -1,54 +1,54 @@
-package com.example.mitchell.UI;
+package com.example.mitchell.UI.ScreenSlidePlots;
 
-import android.arch.persistence.room.Room;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.AsyncTask;
-import android.os.Debug;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
 
-import android.app.Activity;
-import android.graphics.*;
-import android.os.Bundle;
-import android.util.Log;
-
-import com.androidplot.util.FastNumber;
-import com.androidplot.util.PixelUtils;
+import com.androidplot.xy.CatmullRomInterpolator;
+import com.androidplot.xy.LineAndPointFormatter;
 import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.XYGraphWidget;
+import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
-import com.androidplot.xy.*;
+import com.example.mitchell.UI.R;
 
 import java.text.FieldPosition;
 import java.text.Format;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import Controller.Controller;
 import Controller.EntryWrapper;
-import database.AppDatabase;
 
-
-public class EfficiencyVTimePlotActivity extends AppCompatActivity {
+public class EfficiencyVTimePlot extends Fragment {
 
     private XYPlot plot;
-    private Integer carID;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_efficiency_vtime_plot);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        ViewGroup rootView = (ViewGroup) inflater.inflate(
+                R.layout.fragment_efficiency_v_time_plot, container, false);
 
         // initialize our XYPlot reference:
-        plot = findViewById(R.id.plot);
+        plot = rootView.findViewById(R.id.plot);
 
-        //get the carID and build the graph for it
-        carID = getIntent().getIntExtra("carID", 0);
-        buildGraph(plot, carID, this);
+        buildGraph(plot, getArguments().getInt("carID"), getContext());
+
+        return rootView;
     }
 
-    private static void buildGraph(final XYPlot plot, final Integer carID, final Context context) {
+    public static void buildGraph(final XYPlot plot, final Integer carID, final Context context) {
+
         new AsyncTask<Void, Void, List<EntryWrapper>>() {
             @Override
             /**
@@ -90,7 +90,6 @@ public class EfficiencyVTimePlotActivity extends AppCompatActivity {
                 plot.getGraph().getLineLabelStyle(XYGraphWidget.Edge.BOTTOM).setFormat(new Format() {
                     @Override
                     public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
-                        Log.d("G", "format: "+obj);
                         return toAppendTo.append(new SimpleDateFormat("dd/MM/yy").format(new Date(((Number) obj).longValue())));
                     }
 

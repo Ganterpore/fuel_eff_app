@@ -32,7 +32,6 @@ public class Entry {
     }
 
     public void setEid(int eid) {
-        Log.d("R", String.format("setEid: %d", eid));
         this.eid = eid;
     }
 

@@ -38,7 +38,7 @@
                 android:value=".MainActivity" />
         </activity>
         <activity android:name=".TripActivity" />
-        <activity android:name=".EfficiencyVTimePlotActivity"></activity>
+        <activity android:name=".DataPlotsActivity"></activity>
     </application>
 
 </manifest>
