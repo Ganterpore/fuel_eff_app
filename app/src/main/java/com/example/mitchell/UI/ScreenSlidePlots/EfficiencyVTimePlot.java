@@ -47,6 +47,12 @@ public class EfficiencyVTimePlot extends Fragment {
         return rootView;
     }
 
+    /**
+     * Builds the plot on a background thread
+     * @param plot, the plot to draw on
+     * @param carID, the carID to get the data for the plot from
+     * @param context, the application context for the plotting
+     */
     public static void buildGraph(final XYPlot plot, final Integer carID, final Context context) {
 
         new AsyncTask<Void, Void, List<EntryWrapper>>() {
@@ -63,21 +69,17 @@ public class EfficiencyVTimePlot extends Fragment {
              */
             protected void onPostExecute(List<EntryWrapper> entries) {
                 //initiasing variables
-                final ArrayList<String> dateStrings = new ArrayList<>();
                 ArrayList<Long> dateValues = new ArrayList<>();
                 ArrayList<Double> efficiency = new ArrayList<>();
 
                 //getting values for the lists
                 for(EntryWrapper entry : entries) {
-                    dateStrings.add(entry.getDateAsString());
                     dateValues.add(entry.getDate());
                     efficiency.add(entry.getEfficiency());
                 }
 
                 //creating series
                 XYSeries efficiencySeries = new SimpleXYSeries(dateValues, efficiency, "Efficiency");
-//                LineAndPointFormatter efficiencyFormat =
-//                        new LineAndPointFormatter(context, R.xml.line_point_formatter_with_labels);
                 int graphColor = ContextCompat.getColor(context, R.color.colorPrimary);
                 graphColor = Color.argb(95, Color.red(graphColor), Color.green(graphColor), Color.blue(graphColor));
                 LineAndPointFormatter efficiencyFormat = new LineAndPointFormatter(R.color.colorPrimary, R.color.colorPrimaryDark, graphColor, null);
