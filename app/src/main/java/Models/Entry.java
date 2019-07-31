@@ -26,6 +26,14 @@ import static android.arch.persistence.room.ForeignKey.SET_NULL;
         )}
 )
 public class Entry {
+    public int getEid() {
+        return eid;
+    }
+
+    public void setEid(int eid) {
+        this.eid = eid;
+    }
+
     @PrimaryKey(autoGenerate = true)
     private int eid;
 
