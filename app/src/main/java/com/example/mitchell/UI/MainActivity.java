@@ -14,22 +14,18 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.text.DecimalFormat;
+import java.util.List;
 
 import Controller.Controller;
-import Controller.EntryController;
 import Models.Car;
 import Models.EntryTag;
 import Models.PetrolType;
@@ -114,7 +110,6 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
      * @param activity, the MainActivity to update
      */
     private static void updateDetails(final MainActivity activity) {
-        final DecimalFormat decimalFormat = new DecimalFormat("#.00");
         new AsyncTask<Void, Void, Boolean>() {
 
             @Override
@@ -136,24 +131,7 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
                     activity.carID = preferences.getInt("car", defaultCid);
                     activity.currentCar = Controller.getCurrentController().getCar(activity.carID);
 
-                    //setting the views
-                    EntryController entryC = activity.controller.entryC;
-                  
-                    activity.make.setText(activity.currentCar.getMake());
-                    activity.model.setText(activity.currentCar.getModel());
-                    activity.license.setText(activity.currentCar.getLicensePlate());
-                    activity.efficiency.setText(decimalFormat.format(entryC.getAverageEfficiency(activity.carID)));
-                    activity.distance.setText(decimalFormat.format(entryC.getTotalDistance(activity.carID)));
-                    activity.cost.setText(decimalFormat.format(entryC.getTotalCost(activity.carID)));
-                    activity.litres.setText(decimalFormat.format(entryC.getTotalLitres(activity.carID)));
-                  
-                    //updating the spinner with the car details
-                    ArrayAdapter<Car> carArrayAdapter = (ArrayAdapter<Car>) activity.carChoices.getAdapter();
-                    carArrayAdapter.clear();
-                    carArrayAdapter.addAll(activity.cars);
-                    //sets the currently selected car to the current car
-                    int carIndex = carArrayAdapter.getPosition(activity.currentCar);
-                    activity.carChoices.setSelection(carIndex);
+                    setCar(activity, activity.currentCar);
                  }
                 return true;
             }
@@ -162,13 +140,12 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
             protected void onPostExecute(Boolean carExists) {
                 //once background tasks are finished, stop the progress spinner
                 activity.showProgress(false);
-                //if no car exists, create a diologue to build a car
+                //if no car exists, create a dialogue to build a car
                 if(!carExists) {
                     CreateCarDialogueBuilder.createCarDialogue(activity, activity);
                 }
             }
         }.execute();
-
     }
 
     @Override
@@ -330,51 +307,6 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
                 return null;
             }
 
-//     public class CarSetter extends AsyncTask<Void, Void, Void> {
-//         private MainActivity activity;
-//         private Car car;
-//         private double averageEfficiency;
-//         private double totalDistance;
-//         private double totalCost;
-//         private double totalLitres;
-//         final DecimalFormat decimalFormat = new DecimalFormat("#.00");
-
-//         public CarSetter(MainActivity activity, Car car) {
-//             this.activity = activity;
-//             this.car = car;
-//         }
-
-//         @Override
-//         protected Void doInBackground(Void... voids) {
-//             averageEfficiency = activity.controller.entryC.getAverageEfficiency(car.getCid());
-//             totalDistance = activity.controller.entryC.getTotalDistance(car.getCid());
-//             totalCost = activity.controller.entryC.getTotalCost(car.getCid());
-//             totalLitres = activity.controller.entryC.getTotalLitres(car.getCid());
-
-
-
-//             SharedPreferences preferences = activity.getSharedPreferences(SHARED_PREFS_LOC, MODE_PRIVATE);
-//             preferences.edit().putInt("car", car.getCid()).apply();
-
-//             return null;
-//         }
-
-
-//         @Override
-//         protected void onPostExecute(Void aVoid) {
-
-//             activity.currentCar = car;
-//             activity.carID = car.getCid();
-
-//                 //update the view
-//                 activity.make.setText(car.getMake());
-//                 activity.model.setText(car.getModel());
-//                 activity.license.setText(car.getLicensePlate());
-//                 activity.efficiency.setText(decimalFormat.format(averageEfficiency));
-//                 activity.distance.setText(decimalFormat.format(totalDistance));
-//                 activity.cost.setText(decimalFormat.format(totalCost));
-//                 activity.litres.setText(decimalFormat.format(totalLitres));
-
             @Override
             protected void onPostExecute(Void aVoid) {
                 //update the current car
@@ -382,6 +314,10 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
                 activity.carID = car.getCid();
 
                 //update the view
+                activity.make.setText(activity.currentCar.getMake());
+                activity.model.setText(activity.currentCar.getModel());
+                activity.license.setText(activity.currentCar.getLicensePlate());
+
                 activity.efficiency.setText(decimalFormat.format(averageEfficiency[0]));
                 activity.distance.setText(decimalFormat.format(totalDistance[0]));
                 activity.cost.setText(decimalFormat.format(totalCost[0]));
