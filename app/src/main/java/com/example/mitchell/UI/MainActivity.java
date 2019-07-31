@@ -152,6 +152,8 @@ public class MainActivity extends AppCompatActivity implements DatabaseObserver 
                     activity.cost.setText(decimalFormat.format(entryC.getTotalCost(activity.carID)));
                     activity.litres.setText(decimalFormat.format(entryC.getTotalLitres(activity.carID)));
 
+                    
+
                     ArrayAdapter<Car> carArrayAdapter = (ArrayAdapter<Car>) activity.carChoices.getAdapter();
                     carArrayAdapter.clear();
                     carArrayAdapter.addAll(activity.cars);
