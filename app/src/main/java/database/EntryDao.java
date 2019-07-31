@@ -39,9 +39,6 @@ public interface EntryDao {
     @Query("SELECT * FROM entry WHERE eid = :eid")
     Entry getEntry(long eid);
 
-    @Query("SELECT * FROM entry")
-    List<Entry> getAllEntries();
-
     @Query("SELECT * FROM entry WHERE car = :cid ORDER BY date")
     List<Entry> getAllEntriesOnCar(int cid);
 

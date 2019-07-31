@@ -55,7 +55,7 @@ public class EfficiencyVTimePlot extends Fragment {
              * gets all the entries which will be added to the graph
              */
             protected List<EntryWrapper> doInBackground(Void... voids) {
-                return Controller.getCurrentController().entryC.getAllEntries(carID);
+                return Controller.getCurrentController().entryC.getAllEntriesOnCar(carID);
             }
             @Override
             /**
