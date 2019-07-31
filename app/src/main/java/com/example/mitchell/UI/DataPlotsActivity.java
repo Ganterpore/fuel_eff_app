@@ -15,7 +15,7 @@ import com.example.mitchell.UI.ScreenSlidePlots.EfficiencyVTimePlot;
 public class DataPlotsActivity extends AppCompatActivity {
 
     private Integer carID;
-    private static final int NUM_PAGES = 5;
+    private static final int NUM_PAGES = 1;
     private ViewPager mPager;
     private PagerAdapter pagerAdapter;
 
@@ -24,7 +24,7 @@ public class DataPlotsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_efficiency_vtime_plot);
 
-        mPager = (ViewPager) findViewById(R.id.pager);
+        mPager = findViewById(R.id.pager);
         pagerAdapter = new ScreenSlidePagerAdapter(getSupportFragmentManager(), this);
         mPager.setAdapter(pagerAdapter);
 
@@ -32,6 +32,9 @@ public class DataPlotsActivity extends AppCompatActivity {
         carID = getIntent().getIntExtra("carID", 0);
     }
 
+    /**
+     * Used to create the plot fragments to be displeayed on the screen
+     */
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         Context context;
         public ScreenSlidePagerAdapter(FragmentManager fm, Context context) {
@@ -53,7 +56,6 @@ public class DataPlotsActivity extends AppCompatActivity {
             Bundle bundle = new Bundle();
             bundle.putInt("carID", carID);
             plot.setArguments(bundle);
-//                    plot.carID = carID;
             return plot;
         }
 
