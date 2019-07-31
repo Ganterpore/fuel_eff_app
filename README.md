@@ -6,8 +6,9 @@ All data is stored locally to the device, however it is backed up to the cloud.
 # How to use the app
 When you open the app you will be greeted with a screen showing the total historic details of the current selected cart. If you tap the history button you will be able to view all the times you have filled up your car, or tap the trips button on that page to get the history of your trips between refueling. By tapping the Data button you can look at different plots of various factors which can be gleaned from the data.Tapping on the currently selected car will allow you to change which car you are viewing.
 
-<img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_main_page.jpg" width="200"/> '
+<img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_main_page.jpg" width="200"/>  .
 <img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_Entry_History.jpg" width="200"/>
+<img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_data_plot.jpg" height="200"/>
 
 ## Adding an Entry
 When you fuel up your car, you need to press the plus button in the bottom right of the screen. Here you can fill in the basic details of your trip.
