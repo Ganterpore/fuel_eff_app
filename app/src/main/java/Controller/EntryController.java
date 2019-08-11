@@ -81,6 +81,25 @@ public class EntryController {
     }
 
     /**
+     * Gets all entries with a particular fuel
+     * @param cid, the ID of the car they are on
+     * @param pid, the ID of the fuel
+     * @return a List of Entry's in the form of EntryWrappers
+     */
+    public List<EntryWrapper> getAllEntriesWithFuel(int cid, int pid) {
+        //getting all the entries with the fuel
+        List<Entry> entries = db.entryDao().getEntryWithFuel(pid, cid);
+        //wrapping the entries before returning them
+        List<EntryWrapper> wrappedEntries = new ArrayList<>();
+        for(Entry entry : entries) {
+            wrappedEntries.add(new EntryWrapper(entry, db));
+        }
+        return wrappedEntries;
+    }
+
+
+
+    /**
      * Gets all entries with a particular fuel percentage
      * @param percent, the percent of the fuel
      * @return a list of Entry's with that percent.

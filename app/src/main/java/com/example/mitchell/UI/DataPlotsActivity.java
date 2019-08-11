@@ -8,14 +8,16 @@ import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 
 import com.example.mitchell.UI.ScreenSlidePlots.EfficiencyVTimePlot;
+import com.example.mitchell.UI.ScreenSlidePlots.FuelEffectEfficiency;
 
 
 public class DataPlotsActivity extends AppCompatActivity {
 
     private Integer carID;
-    private static final int NUM_PAGES = 1;
+    private static final int NUM_PAGES = 2;
     private ViewPager mPager;
     private PagerAdapter pagerAdapter;
 
@@ -44,13 +46,17 @@ public class DataPlotsActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            EfficiencyVTimePlot plot;
+            Fragment plot;
             switch (position) {
-                case 1:
+                case 0:
                     plot = new EfficiencyVTimePlot();
                     break;
+                case 1:
+                    Log.d("L", "getItem: Making fuel affect effeciency");
+                    plot = new FuelEffectEfficiency();
+                    break;
                 default:
-                    plot = new EfficiencyVTimePlot();
+                    plot = new FuelEffectEfficiency();
                     break;
             }
             Bundle bundle = new Bundle();

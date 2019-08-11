@@ -27,7 +27,7 @@ import java.util.Date;
 import java.util.List;
 
 import Controller.Controller;
-import Controller.EntryWrapper;
+import Controller.EntryWrapper; 
 
 public class EfficiencyVTimePlot extends Fragment {
 

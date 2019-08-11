@@ -128,4 +128,7 @@ public interface EntryDao {
             "(SELECT pid FROM petroltype WHERE percent = :percent)")
     List<Entry> getEntryWithPercent(int percent);
 
+    @Query("SELECT * FROM entry WHERE car = :cid & fuel = :pid")
+    List<Entry> getEntryWithFuel(long pid, long cid);
+
 }
