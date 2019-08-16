@@ -52,7 +52,7 @@ public class FuelEffectEfficiency extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(
-                R.layout.fragment_efficiency_v_time_plot, container, false);
+                R.layout.fragment_fuel_effect_efficiency, container, false);
 
         // initialize our XYPlot reference:
         plot = rootView.findViewById(R.id.plot);
@@ -133,8 +133,8 @@ public class FuelEffectEfficiency extends Fragment {
                 });
                 plot.redraw();
 
-                Log.d("W", "onPostExecute: "+ Arrays.toString(plotItems.efficiencyFactors.toArray()));
-                Log.d("W", "onPostExecute: "+ Arrays.toString(plotItems.fuelNames.toArray()));
+//                Log.d("W", "onPostExecute: "+ Arrays.toString(plotItems.efficiencyFactors.toArray()));
+//                Log.d("W", "onPostExecute: "+ Arrays.toString(plotItems.fuelNames.toArray()));
             }
         }.execute();
     }
