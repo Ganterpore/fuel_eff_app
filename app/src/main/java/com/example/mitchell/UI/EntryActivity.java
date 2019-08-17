@@ -25,18 +25,22 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
     private EntryWrapper entry; //entry being displayed
     private List<Car> cars;
     private List<PetrolType> fuels;
+    private PetrolType fuelUsed;
     private List<EntryTag> tags;
     private Car currentCar;
 
     //Views on page
-    private TextView efficiency;
-    private TextView litres;
-    private TextView distance;
-    private TextView cost;
-    private TextView cpkm;
-    private TextView note;
-    private TextView prevTags;
-    private TextView nextTags;
+    private TextView dateView;
+    private TextView efficiencyView;
+    private TextView litresView;
+    private TextView distanceView;
+    private TextView costView;
+    private TextView priceView;
+    private TextView cpkmView;
+    private TextView fuelView;
+    private TextView noteView;
+    private TextView prevTagsView;
+    private TextView nextTagsView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +50,17 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
         setSupportActionBar(toolbar);
 
         //setting the views
-        efficiency = findViewById(R.id.displayEfficiency);
-        litres = findViewById(R.id.displayLitresFilled);
-        distance = findViewById(R.id.displayDistanceTravelled);
-        cost = findViewById(R.id.displayCost);
-        cpkm = findViewById(R.id.displayCentsPerKilometre);
-        note = findViewById(R.id.display_note);
-        prevTags = findViewById(R.id.prev_tags);
-        nextTags = findViewById(R.id.next_tags);
+        dateView = findViewById(R.id.displayDate);
+        efficiencyView = findViewById(R.id.displayEfficiency);
+        litresView = findViewById(R.id.displayLitresFilled);
+        distanceView = findViewById(R.id.displayDistanceTravelled);
+        costView = findViewById(R.id.displayCost);
+        priceView = findViewById(R.id.displayPrice);
+        cpkmView = findViewById(R.id.displayCentsPerKilometre);
+        fuelView = findViewById(R.id.displayFuel);
+        noteView = findViewById(R.id.display_note);
+        prevTagsView = findViewById(R.id.prev_tags);
+        nextTagsView = findViewById(R.id.next_tags);
 
         //updates the page based on the given entryID
         if(getIntent().hasExtra("eid")) {
@@ -78,6 +85,8 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
                 //get the entry, and other information, from the database
                 EntryWrapper entry = Controller.getCurrentController().entryC.getEntry(eid);
 
+                activity.fuelUsed = Controller.getCurrentController().getFuel(entry.getFuel());
+
                 activity.fuels = Controller.getCurrentController().getAllFuels();
                 activity.cars = Controller.getCurrentController().getAllCars();
                 activity.tags = Controller.getCurrentController().getAllTags();
@@ -86,18 +95,21 @@ public class EntryActivity extends AppCompatActivity implements DatabaseObserver
             }
 
             @Override
-            protected void onPostExecute(EntryWrapper entryWrapper) {
-                activity.entry = entryWrapper;
+            protected void onPostExecute(EntryWrapper entry) {
+                activity.entry = entry;
                 //update the views to reflect the data on the database
-                activity.efficiency.setText(decimalFormat.format(entryWrapper.getEfficiency()));
-                activity.litres.setText(decimalFormat.format(entryWrapper.getLitres()));
-                activity.distance.setText(decimalFormat.format(entryWrapper.getTrip()));
-                activity.cost.setText(decimalFormat.format(entryWrapper.getCost()));
-                activity.cpkm.setText(decimalFormat.format(entryWrapper.getCPerKm()));
-                activity.note.setText(entryWrapper.getNote());
+                activity.dateView.setText(entry.getDateAsString());
+                activity.efficiencyView.setText(decimalFormat.format(entry.getEfficiency()));
+                activity.litresView.setText(decimalFormat.format(entry.getLitres()));
+                activity.distanceView.setText(decimalFormat.format(entry.getTrip()));
+                activity.costView.setText(decimalFormat.format(entry.getCost()));
+                activity.priceView.setText(decimalFormat.format(entry.getPrice()));
+                activity.cpkmView.setText(decimalFormat.format(entry.getCPerKm()));
+                activity.fuelView.setText(activity.fuelUsed.toString());
+                activity.noteView.setText(entry.getNote());
 
-                activity.prevTags.setText(Arrays.toString(entryWrapper.getTags(false).toArray()));
-                activity.nextTags.setText(Arrays.toString(entryWrapper.getTags(true).toArray()));
+                activity.prevTagsView.setText(Arrays.toString(entry.getTags(false).toArray()));
+                activity.nextTagsView.setText(Arrays.toString(entry.getTags(true).toArray()));
             }
         }.execute();
     }
