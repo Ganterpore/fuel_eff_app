@@ -10,10 +10,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:minHeight="50dp"
-        ap:domainTitle="Date"
         ap:lineLabelRotationBottom="-45"
         ap:lineLabels="left|bottom"
-        ap:rangeTitle="Efficiency"
+        ap:rangeTitle="Percent Effect on Efficiency"
         ap:title="Fuel effect on efficiency" />
 
 </RelativeLayout>

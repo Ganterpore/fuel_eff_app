@@ -1,4 +1,4 @@
-package com.example.mitchell.UI.ScreenSlidePlots;
+ package com.example.mitchell.UI.ScreenSlidePlots;
 
 import android.content.Context;
 import android.graphics.Color;
@@ -11,9 +11,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.androidplot.util.PixelUtils;
 import com.androidplot.xy.BarFormatter;
+import com.androidplot.xy.BarRenderer;
+import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.CatmullRomInterpolator;
 import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.PanZoom;
 import com.androidplot.xy.SimpleXYSeries;
 import com.androidplot.xy.StepMode;
 import com.androidplot.xy.XYGraphWidget;
@@ -77,7 +81,7 @@ public class FuelEffectEfficiency extends Fragment {
              */
             protected PlotItems doInBackground(Void... voids) {
                 //initialising values
-                double averageEfficency = Controller.getCurrentController().entryC.getAverageEfficiency(carID);
+                double totalAverageEfficiency = Controller.getCurrentController().entryC.getAverageEfficiency(carID);
                 ArrayList<String> fuelNames = new ArrayList<>();
                 ArrayList<Double> efficiencyFactors = new ArrayList<>();
 
@@ -88,7 +92,8 @@ public class FuelEffectEfficiency extends Fragment {
                     fuelNames.add(fuel.getName());
 
                     //finding the average efficiency
-                    List<EntryWrapper> entriesOnFuel = Controller.getCurrentController().entryC.getAllEntriesWithFuel(carID, fuel.getPid());
+                    int pid = fuel.getPid();
+                    List<EntryWrapper> entriesOnFuel = Controller.getCurrentController().entryC.getAllEntriesWithFuel(carID, pid);
                     double efficiencySum = 0;
                     int count = 0;
                     for (EntryWrapper entry : entriesOnFuel) {
@@ -98,9 +103,9 @@ public class FuelEffectEfficiency extends Fragment {
 
                     //calculating the efficiency factor
                     double efficiencyFactor;
-                    if(count > 0 & averageEfficency > 0) {
+                    if(count > 0 & totalAverageEfficiency > 0) {
                         double averageEfficiency = efficiencySum/count;
-                         efficiencyFactor = ((averageEfficiency/averageEfficency) - 1)*100;
+                         efficiencyFactor = ((averageEfficiency/totalAverageEfficiency) - 1)*100;
                     } else {
                         efficiencyFactor = 0;
                     }
@@ -114,10 +119,20 @@ public class FuelEffectEfficiency extends Fragment {
              */
             protected void onPostExecute(final PlotItems plotItems) {
                 XYSeries efficiencyFactors = new SimpleXYSeries(plotItems.efficiencyFactors, SimpleXYSeries.ArrayFormat.Y_VALS_ONLY, "EfficiencyFactor");
-                BarFormatter efficiencyFactorFormat = new BarFormatter(R.color.colorPrimary, Color.BLACK);
+                int colour = ContextCompat.getColor(context, R.color.colorPrimary);
+                BarFormatter efficiencyFactorFormat = new BarFormatter(colour, Color.BLACK);
 
                 plot.addSeries(efficiencyFactors, efficiencyFactorFormat);
                 plot.setDomainStep(StepMode.INCREMENT_BY_VAL, 1);
+//                plot.setDomainLowerBoundary(-0.5, BoundaryMode.FIXED);
+                plot.setPlotMarginLeft(100);
+                plot.setRangeStep(StepMode.INCREMENT_BY_VAL, 1);
+                plot.setUserRangeOrigin(0);
+                plot.getLayoutManager().remove(plot.getLegend());
+                plot.getGraph().getDomainGridLinePaint().setAlpha(0);
+
+                BarRenderer renderer = plot.getRenderer(BarRenderer.class);
+                renderer.setBarGroupWidth(BarRenderer.BarGroupWidthMode.FIXED_GAP, 50);
 
                 plot.getGraph().getLineLabelStyle(XYGraphWidget.Edge.BOTTOM).setFormat(new Format() {
                     @Override
@@ -128,13 +143,11 @@ public class FuelEffectEfficiency extends Fragment {
 
                     @Override
                     public Object parseObject(String source, ParsePosition pos) {
-                        return java.util.Arrays.asList(plotItems.fuelNames).indexOf(source);
+                        return Arrays.asList(plotItems.fuelNames).indexOf(source);
                     }
+
                 });
                 plot.redraw();
-
-//                Log.d("W", "onPostExecute: "+ Arrays.toString(plotItems.efficiencyFactors.toArray()));
-//                Log.d("W", "onPostExecute: "+ Arrays.toString(plotItems.fuelNames.toArray()));
             }
         }.execute();
     }
