@@ -12,12 +12,13 @@ import android.util.Log;
 
 import com.example.mitchell.UI.ScreenSlidePlots.EfficiencyVTimePlot;
 import com.example.mitchell.UI.ScreenSlidePlots.FuelEffectEfficiency;
+import com.example.mitchell.UI.ScreenSlidePlots.TagEffectEfficiency;
 
 
 public class DataPlotsActivity extends AppCompatActivity {
 
     private Integer carID;
-    private static final int NUM_PAGES = 2;
+    private static final int NUM_PAGES = 3;
     private ViewPager mPager;
     private PagerAdapter pagerAdapter;
 
@@ -52,8 +53,10 @@ public class DataPlotsActivity extends AppCompatActivity {
                     plot = new EfficiencyVTimePlot();
                     break;
                 case 1:
-                    Log.d("L", "getItem: Making fuel affect effeciency");
                     plot = new FuelEffectEfficiency();
+                    break;
+                case 2:
+                    plot = new TagEffectEfficiency();
                     break;
                 default:
                     plot = new FuelEffectEfficiency();
