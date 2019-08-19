@@ -2,6 +2,7 @@ package com.example.mitchell.UI.ScreenSlidePlots;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -27,9 +28,10 @@ import java.util.Date;
 import java.util.List;
 
 import Controller.Controller;
-import Controller.EntryWrapper; 
+import Controller.EntryWrapper;
 
-public class EfficiencyVTimePlot extends Fragment {
+
+public class cpkmOverTime extends Fragment {
 
     private XYPlot plot;
 
@@ -37,7 +39,7 @@ public class EfficiencyVTimePlot extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(
-                R.layout.fragment_efficiency_v_time_plot, container, false);
+                R.layout.fragment_cpkm_over_time, container, false);
 
         // initialize our XYPlot reference:
         plot = rootView.findViewById(R.id.plot);
@@ -70,16 +72,16 @@ public class EfficiencyVTimePlot extends Fragment {
             protected void onPostExecute(List<EntryWrapper> entries) {
                 //initiasing variables
                 ArrayList<Long> dateValues = new ArrayList<>();
-                ArrayList<Double> efficiency = new ArrayList<>();
+                ArrayList<Double> cpkm = new ArrayList<>();
 
                 //getting values for the lists
                 for(EntryWrapper entry : entries) {
                     dateValues.add(entry.getDate());
-                    efficiency.add(entry.getEfficiency());
+                    cpkm.add(entry.getCPerKm());
                 }
 
                 //creating series
-                XYSeries efficiencySeries = new SimpleXYSeries(dateValues, efficiency, "Efficiency");
+                XYSeries efficiencySeries = new SimpleXYSeries(dateValues, cpkm, "cents per kilometre");
                 int graphColor = ContextCompat.getColor(context, R.color.colorPrimary);
                 graphColor = Color.argb(95, Color.red(graphColor), Color.green(graphColor), Color.blue(graphColor));
                 LineAndPointFormatter efficiencyFormat = new LineAndPointFormatter(R.color.colorPrimary, R.color.colorPrimaryDark, graphColor, null);
