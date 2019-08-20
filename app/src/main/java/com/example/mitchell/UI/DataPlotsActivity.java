@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.example.mitchell.UI.ScreenSlidePlots.EfficiencyVTimePlot;
 import com.example.mitchell.UI.ScreenSlidePlots.FuelEffectEfficiency;
+import com.example.mitchell.UI.ScreenSlidePlots.RefuelsPerMonth;
 import com.example.mitchell.UI.ScreenSlidePlots.TagEffectEfficiency;
 import com.example.mitchell.UI.ScreenSlidePlots.cpkmOverTime;
 
@@ -18,7 +19,7 @@ import com.example.mitchell.UI.ScreenSlidePlots.cpkmOverTime;
 public class DataPlotsActivity extends AppCompatActivity {
 
     private Integer carID;
-    private static final int NUM_PAGES = 4;
+    private static final int NUM_PAGES = 5;
     private ViewPager mPager;
     private PagerAdapter pagerAdapter;
 
@@ -60,6 +61,9 @@ public class DataPlotsActivity extends AppCompatActivity {
                     break;
                 case 3:
                     plot = new TagEffectEfficiency();
+                    break;
+                case 4:
+                    plot = new RefuelsPerMonth();
                     break;
                 default:
                     plot = new FuelEffectEfficiency();
