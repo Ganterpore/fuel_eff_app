@@ -81,11 +81,25 @@
         android:textAppearance="@android:style/TextAppearance.Medium"
         android:text="0.0"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fuel:"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/trip_fuel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textAlignment="center"
+        android:textAppearance="@android:style/TextAppearance.Medium"
+        android:text="0.0"/>
+
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Tags from start:"
+        android:text="Tags:"
         android:textStyle="bold"/>
 
     <TextView

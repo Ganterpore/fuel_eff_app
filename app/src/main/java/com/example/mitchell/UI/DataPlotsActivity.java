@@ -10,12 +10,17 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 
 import com.example.mitchell.UI.ScreenSlidePlots.EfficiencyVTimePlot;
+import com.example.mitchell.UI.ScreenSlidePlots.FuelEffectEfficiency;
+import com.example.mitchell.UI.ScreenSlidePlots.KMsTravelledPerMonth;
+import com.example.mitchell.UI.ScreenSlidePlots.RefuelsPerMonth;
+import com.example.mitchell.UI.ScreenSlidePlots.TagEffectEfficiency;
+import com.example.mitchell.UI.ScreenSlidePlots.cpkmOverTime;
 
 
 public class DataPlotsActivity extends AppCompatActivity {
 
     private Integer carID;
-    private static final int NUM_PAGES = 1;
+    private static final int NUM_PAGES = 6;
     private ViewPager mPager;
     private PagerAdapter pagerAdapter;
 
@@ -44,13 +49,28 @@ public class DataPlotsActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            EfficiencyVTimePlot plot;
+            Fragment plot;
             switch (position) {
-                case 1:
+                case 0:
                     plot = new EfficiencyVTimePlot();
                     break;
+                case 1:
+                    plot = new cpkmOverTime();
+                    break;
+                case 2:
+                    plot = new FuelEffectEfficiency();
+                    break;
+                case 3:
+                    plot = new TagEffectEfficiency();
+                    break;
+                case 4:
+                    plot = new RefuelsPerMonth();
+                    break;
+                case 5:
+                    plot = new KMsTravelledPerMonth();
+                    break;
                 default:
-                    plot = new EfficiencyVTimePlot();
+                    plot = new FuelEffectEfficiency();
                     break;
             }
             Bundle bundle = new Bundle();

@@ -10,7 +10,9 @@ import android.widget.TextView;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 
+import Controller.Controller;
 import Controller.TripWrapper;
+import Models.PetrolType;
 import database.AppDatabase;
 
 /**
@@ -30,6 +32,7 @@ public class TripActivity extends AppCompatActivity {
         final TextView tripEff = findViewById(R.id.trip_efficiency);
         final TextView tripDays = findViewById(R.id.trip_days);
         final TextView tripLitres = findViewById(R.id.trip_litres);
+        final TextView tripFuel = findViewById(R.id.trip_fuel);
         final TextView tripTags = findViewById(R.id.trip_tags);
 
         //updating the page based on the entries which made it
@@ -37,8 +40,8 @@ public class TripActivity extends AppCompatActivity {
             && getIntent().hasExtra("entry2")) {
             final int entry1 = getIntent().getIntExtra("entry1", 0);
             final int entry2 = getIntent().getIntExtra("entry2", 0);
-            updatePage(startDate, tripLength, tripEff, tripDays, tripLitres, tripTags,
-                    entry1, entry2, getApplicationContext());
+            updatePage(startDate, tripLength, tripEff, tripDays, tripLitres, tripFuel,
+                    tripTags, entry1, entry2, getApplicationContext());
         }
     }
 
@@ -47,15 +50,19 @@ public class TripActivity extends AppCompatActivity {
      */
     private static void updatePage(final TextView startDate, final TextView tripLength,
                                    final TextView tripEff, final TextView tripDays,
-                                   final TextView tripLitres, final TextView tripTags,
-                                   final int entry1, final int entry2, final Context context) {
+                                   final TextView tripLitres, final TextView tripFuel,
+                                   final TextView tripTags, final int entry1,
+                                   final int entry2, final Context context) {
         new AsyncTask<Void, Void, TripWrapper>() {
+            PetrolType fuel;
             @Override
             protected TripWrapper doInBackground(Void... voids) {
                 //gets trip from database
                 AppDatabase db = Room.databaseBuilder(context,
                         AppDatabase.class, "database-name").build();
-                return new TripWrapper(entry1, entry2, db);
+                TripWrapper trip = new TripWrapper(entry1, entry2, db);
+                fuel = Controller.getCurrentController().getFuel(trip.getTrip().getFuel());
+                return trip;
             }
 
             @Override
@@ -66,6 +73,7 @@ public class TripActivity extends AppCompatActivity {
                 tripEff.setText(DECIMAL_FORMAT.format(tripWrapper.getTrip().getEfficiency()));
                 tripDays.setText(String.valueOf(tripWrapper.getTrip().getDays()));
                 tripLitres.setText(DECIMAL_FORMAT.format(tripWrapper.getTrip().getLitres()));
+                tripFuel.setText(fuel.toString());
                 tripTags.setText(Arrays.toString(tripWrapper.getTags().toArray()));
             }
         }.execute();

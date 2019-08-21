@@ -2,6 +2,7 @@ package com.example.mitchell.UI.ScreenSlidePlots;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -10,9 +11,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.androidplot.xy.CatmullRomInterpolator;
-import com.androidplot.xy.LineAndPointFormatter;
+import com.androidplot.xy.BarFormatter;
+import com.androidplot.xy.BarRenderer;
+import com.androidplot.xy.BoundaryMode;
 import com.androidplot.xy.SimpleXYSeries;
+import com.androidplot.xy.StepMode;
 import com.androidplot.xy.XYGraphWidget;
 import com.androidplot.xy.XYPlot;
 import com.androidplot.xy.XYSeries;
@@ -23,13 +26,14 @@ import java.text.Format;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import Controller.Controller;
-import Controller.EntryWrapper; 
+import Controller.EntryWrapper;
 
-public class EfficiencyVTimePlot extends Fragment {
+public class KMsTravelledPerMonth extends Fragment {
 
     private XYPlot plot;
 
@@ -37,7 +41,7 @@ public class EfficiencyVTimePlot extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         ViewGroup rootView = (ViewGroup) inflater.inflate(
-                R.layout.fragment_efficiency_v_time_plot, container, false);
+                R.layout.fragment_kms_travelled_per_month, container, false);
 
         // initialize our XYPlot reference:
         plot = rootView.findViewById(R.id.plot);
@@ -65,34 +69,51 @@ public class EfficiencyVTimePlot extends Fragment {
             }
             @Override
             /**
-             * puts all entries in a series and plits the graph
+             * puts all entries in a series and plots the graph
              */
             protected void onPostExecute(List<EntryWrapper> entries) {
                 //initiasing variables
-                ArrayList<Long> dateValues = new ArrayList<>();
-                ArrayList<Double> efficiency = new ArrayList<>();
+                ArrayList<Long> months = new ArrayList<>();
+                ArrayList<Double> kmsTravelled = new ArrayList<>();
 
                 //getting values for the lists
+                int monthIndices = -1; //used to track the index we are at in the lists
                 for(EntryWrapper entry : entries) {
-                    dateValues.add(entry.getDate());
-                    efficiency.add(entry.getEfficiency());
+                    Date date = new Date(entry.getDate()); //the date of the entry
+
+                    //getting the date of the first day of the month of the entry
+                    Calendar cal = Calendar.getInstance();
+                    cal.setTime(date);
+                    cal.set(Calendar.DAY_OF_MONTH, cal.getActualMinimum(Calendar.DAY_OF_MONTH));
+                    long monthNumber = cal.getTimeInMillis();
+
+                    if(!months.contains(monthNumber)) {
+                        // if the month does not exist yet, create a new month, move the index
+                        //  and up the count by 1
+                        months.add(monthNumber);
+                        monthIndices++;
+                        kmsTravelled.add(entry.getTrip());
+                    } else {
+                        kmsTravelled.set(monthIndices, kmsTravelled.get(monthIndices) + entry.getTrip()); //iterate refuels by 1
+                    }
                 }
 
-                //creating series
-                XYSeries efficiencySeries = new SimpleXYSeries(dateValues, efficiency, "Efficiency");
-                int graphColor = ContextCompat.getColor(context, R.color.colorPrimary);
-                graphColor = Color.argb(95, Color.red(graphColor), Color.green(graphColor), Color.blue(graphColor));
-                LineAndPointFormatter efficiencyFormat = new LineAndPointFormatter(R.color.colorPrimary, R.color.colorPrimaryDark, graphColor, null);
-                efficiencyFormat.setInterpolationParams(
-                        new CatmullRomInterpolator.Params(10, CatmullRomInterpolator.Type.Uniform));
+                //creating series and formatter
+                XYSeries kmTravelledSeries = new SimpleXYSeries(months, kmsTravelled, "Kms Travelled");
+                int colour = ContextCompat.getColor(context, R.color.colorPrimary);
+                BarFormatter refuelFactorFormat = new BarFormatter(colour, Color.BLACK);
 
                 //updating plot
-                plot.addSeries(efficiencySeries, efficiencyFormat);
+                plot.addSeries(kmTravelledSeries, refuelFactorFormat);
+                BarRenderer renderer = plot.getRenderer(BarRenderer.class);
+                renderer.setBarGroupWidth(BarRenderer.BarGroupWidthMode.FIXED_GAP, 0);
+                plot.setRangeLowerBoundary(0, BoundaryMode.FIXED);
+//                plot.setRangeStep(StepMode.INCREMENT_BY_VAL, 1);
                 plot.getLayoutManager().remove(plot.getLegend());
                 plot.getGraph().getLineLabelStyle(XYGraphWidget.Edge.BOTTOM).setFormat(new Format() {
                     @Override
                     public StringBuffer format(Object obj, StringBuffer toAppendTo, FieldPosition pos) {
-                        return toAppendTo.append(new SimpleDateFormat("dd/MM/yy").format(new Date(((Number) obj).longValue())));
+                        return toAppendTo.append(new SimpleDateFormat("MMM-yyyy").format(new Date(((Number) obj).longValue())));
                     }
 
                     @Override

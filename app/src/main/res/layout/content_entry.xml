@@ -13,6 +13,20 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Date:"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/displayDate"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/textview"
+        android:textAlignment="center" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Efficiency:"
         android:textStyle="bold"/>
 
@@ -69,6 +83,20 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:text="Price:"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/displayPrice"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/textview"
+        android:textAlignment="center" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:text="Cents per kilometre:"
         android:textStyle="bold"/>
 
@@ -79,6 +107,20 @@
         android:text="TextView"
         android:textAlignment="center"
         android:textAppearance="@android:style/TextAppearance.Medium"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Fuel:"
+        android:textStyle="bold"/>
+
+    <TextView
+        android:id="@+id/displayFuel"
+        android:textAppearance="@style/TextAppearance.AppCompat.Medium"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/textview"
+        android:textAlignment="center" />
 
     <TextView
         android:layout_width="wrap_content"
