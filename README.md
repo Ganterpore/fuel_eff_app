@@ -4,7 +4,7 @@ This app is designed to record the fuel usage of a users car by getting them to 
 All data is stored locally to the device, however it is backed up to the cloud.
 
 # How to use the app
-When you open the app you will be greeted with a screen showing the total historic details of the currently selected car. If you tap the history button you will be able to view all the times you have filled up your car, or tap the trips button on that page to get the history of your trips between refueling. By tapping the Data button you can look at different plots of various factors which can be gleaned from the data.Tapping on the currently selected car will allow you to change which car you are viewing.
+When you open the app you will be greeted with a screen showing details of the currently selected car. If you tap the history button you will be able to view either all the times you have filled up your car, or the history of your trips between refueling. By tapping the Data button you can look at different graphs created from the data given. Tapping on the currently selected car will allow you to change which car you are viewing.
 
 <img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_main_page.jpg" width="200"/> . 
 <img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_Entry_History.jpg" width="200"/>  
@@ -31,10 +31,13 @@ On the final page you can add any notes to this entry, this is just for your own
 ## Installation
 
 ### Step 1
-Open Android studio, Select File -> New -> project from version control -> git, then fill in the url "https://github.com/Ganterpore/fuel_eff_app"
+Get an android device with developer mode turned on
 
 ### Step 2
-Run the app through android studio on your target app
+Open Android studio, Select File -> New -> project from version control -> git, then fill in the url "https://github.com/Ganterpore/fuel_eff_app"
+
+### Step 3
+Run the app through android studio on your target device
 
 
 Its as simple as that!
