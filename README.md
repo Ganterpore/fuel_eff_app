@@ -1,10 +1,9 @@
 # Fuel Efficiency Tracking
-*Note this app is still in beta and is unfinished* <br/>
-This app is designed to record the fuel usage of a users car by getting them to add an entry whenever they fill up their car. Users can then use this information to track how much they are spending on fuel, and to determine how to reduce this.
+This app is designed to record the fuel usage of a users car by getting them to add an entry whenever they fill up their car. This allows the app to track how much the user is spending on fuel, and show meaningful data on how they can reduce this.
 All data is stored locally to the device, however it is backed up to the cloud.
 
 # How to use the app
-When you open the app you will be greeted with a screen showing details of the currently selected car. If you tap the history button you will be able to view either all the times you have filled up your car, or the history of your trips between refueling. By tapping the Data button you can look at different graphs created from the data given. Tapping on the currently selected car will allow you to change which car you are viewing.
+When you open the app you will be greeted with a screen showing details of the currently selected car. If you tap the history button you will be able to view either all the times you have filled up your car, or the history of your trips between refueling. By tapping the Data button you can look at different graphs created from the data, which can provide useful information for reducing your fuel usage. Tapping on the currently selected car will allow you to change which car you are viewing.
 
 <img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_main_page.jpg" width="200"/> . 
 <img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_Entry_History.jpg" width="200"/>  
@@ -17,7 +16,7 @@ When you fuel up your car, you need to press the plus button in the bottom right
 
 <img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_add_entry.jpg" width="200"/>
 
-After hitting next you get to a page where you can add tags about the previous trip you just had, such as whether it was through traffic or a long straight road, or if it was in warm days or cooler ones. These tags can later be used to analyze what affects your fuel consumption.
+The next button brings you to a page where you can add tags about the previous trip you just had, such as whether it was through traffic or a long straight road, or if it was in warm days or cooler ones. These tags can later be used to analyze what affects your fuel consumption.
 
 The next page is for filling in details that may affect your upcoming trip, perhaps which fuel station you just filled up at.
 
