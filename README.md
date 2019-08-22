@@ -8,7 +8,9 @@ When you open the app you will be greeted with a screen showing the total histor
 
 <img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_main_page.jpg" width="200"/> . 
 <img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_Entry_History.jpg" width="200"/>  
-<img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_data_plot.jpg" height="200"/>
+<img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_data_plot_efficiency.jpg" height="200"/>
+<img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_data_plot_Fuel_effect.jpg" height="200"/>
+<img src="https://raw.githubusercontent.com/Ganterpore/fuel_eff_app/master/Screenshot_data_plot_refuels.jpg" height="200"/>
 
 ## Adding an Entry
 When you fuel up your car, you need to press the plus button in the bottom right of the screen. Here you can fill in the basic details of your trip.
